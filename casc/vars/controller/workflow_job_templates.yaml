@@ -1,0 +1,32 @@
+workflowjobtemplates:
+  - name: "[WF] Remediation Pipeline"
+    org: Default
+    ask_variables_on_launch: true
+    allow_simultaneous: false
+    steps:
+       - identifier: "Open Servicenow Ticket"
+         unified_job_template:
+           organization: "Default"
+           name: "[JT] Open Servicenow Ticket"
+           type: workflow_approval
+           inv: "Automation Controller Inventory"
+         related:
+           success_nodes:
+             - identifier: "[JT] Remediate Nginx"
+       - identifier: "Remediate Nginx"
+         unified_job_template:
+           organization: "Default"
+           name: "[JT] Remediate Nginx"
+           type: workflow_approval
+           inv: "Opentelemetry Inventory"
+         related:
+           success_nodes:
+             - identifier: "[JT] Close Servicenow Ticket"
+       - identifier: "[JT] Close Servicenow Ticket"
+         unified_job_template:
+           organization:
+             name: Default
+           name: "[JT] Close Servicenow Ticket"
+           type: job_template
+           inv: "Automation Controller Inventory"
+

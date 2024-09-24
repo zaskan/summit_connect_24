@@ -1,6 +1,6 @@
 ---
 - name: Trigger Remediation
-  hosts: nginx
+  hosts: all
   gather_facts: false
   tasks:
 

@@ -27,7 +27,7 @@
 
     - name: Trigger Resolution Job Template
       ansible.controller.job_launch:
-        job_template: "Close Servicenow Ticket"
+        job_template: "[JT] Close Servicenow Ticket"
         extra_vars:
           status: "{{ status }}"
           description: "{{ description }}"

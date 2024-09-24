@@ -45,7 +45,7 @@ jobtemplates:
     org: Default
     inv: "Opentelemetry Inventory"
     project: "Ansible EDA OpenTelemetry"
-    playbook: "playbooks/parse_payload.yaml"
+    playbook: "playbooks/remediate.yaml"
     creds:
       - "OpenTelemetry Managed Host Credential"
     use_fact_cache: false

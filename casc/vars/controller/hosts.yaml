@@ -1,11 +1,14 @@
 python_interpreter: "{% raw %}{{ ansible_playbook_python }}{% endraw %}"
 
 inventory_hosts:
-  - name: localhost
-    desc: ""
+  - name: "localhost"
+    desc: "localhost"
     inv: "Automation Controller Inventory"
     vars: '{ "ansible_connection": "local", "ansible_python_interpreter": "{% raw %}{{ python_interpreter }}{% endraw %}" }'
-  - name: OpenTelemetry
-    desc: ""
+  - name: "opentelemetry"
+    desc: "Opentelemetry Host"
     inv: "Opentelemetry Inventory"
-    vars: 'ansible_host: {{ opentelemetry_host_ip }}'
+    vars: 
+      ansible_host: "{{ opentelemetry_host_ip }}"
+
+

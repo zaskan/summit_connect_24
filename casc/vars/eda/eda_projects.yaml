@@ -1,4 +1,4 @@
 eda_projects:
-  - name: ocp-event-driven
-    description: Ocp Event Driven Demo
+  - name: OpenTelemetry EDA Project
+    description: OpenTelemetry EDA Project
     url: "{{ telemetry_project_url }}"

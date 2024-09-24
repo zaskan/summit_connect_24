@@ -6,11 +6,18 @@
 
     - name: Include vars
       ansible.builtin.include_vars:
-        dir: vars
+        file: vars/custom.yaml
 
     - name: Configure Ansible Controller
       ansible.builtin.include_role: 
         name: ansible_automation_platform.casc.controller
       vars: 
-        controller_vars_dir: vars/controller/
-        eda_vars_dir: vars/eda/
+        installation_type: vm
+        controller_vars_dir: vars/controller/*
+
+    - name: Configure Ansible Eda
+      ansible.builtin.include_role: 
+        name: ansible_automation_platform.casc.eda
+      vars:
+        installation_type: vm
+        eda_vars_dir: vars/eda/*

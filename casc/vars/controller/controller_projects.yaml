@@ -1,8 +1,7 @@
 controller_projects:
-  - name: "Ansible EDA Telemetry"
-    desc: "Ansible EDA Telemetry"
+  - name: "Ansible EDA OpenTelemetry"
+    desc: "Ansible EDA OpenTelemetry"
     org: Default
     git_url: "{{ telemetry_project_url }}"
     git_branch: main
-    git_cred: ""
     update_on_launch: no

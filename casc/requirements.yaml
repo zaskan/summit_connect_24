@@ -1,0 +1,3 @@
+collections:
+  - name: https://github.com/zaskan/ansible_automation_platform.casc.git
+    type: git

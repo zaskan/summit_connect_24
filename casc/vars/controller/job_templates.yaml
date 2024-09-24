@@ -1,0 +1,56 @@
+jobtemplates:
+  - name: "[JT] Open Servicenow Ticket"
+    org: Default
+    inv: "Automation Controller Inventory"
+    project: "Ansible EDA OpenTelemetry"
+    playbook: "playbooks/open_ticket.yaml"
+    creds:
+      - "ServiceNow Credential"
+      - "OpenTelemetry Managed Host Credential"
+    use_fact_cache: false
+    ask_limit_on_launch: false
+    ask_variables_on_launch:  true
+    allow_simultaneous: true
+    execution_environment: "Default execution environment"
+
+  - name: "[JT] Close Servicenow Ticket"
+    org: Default
+    inv: "Automation Controller Inventory"
+    project: "Ansible EDA OpenTelemetry"
+    playbook: "playbooks/close_ticket.yaml"
+    creds:
+      - "ServiceNow Credential"
+      - "OpenTelemetry Managed Host Credential"
+    use_fact_cache: false
+    ask_limit_on_launch: false
+    ask_variables_on_launch:  true
+    allow_simultaneous: true
+    execution_environment: "Default execution environment"
+
+  - name: "[JT] Parse Kafka Payload"
+    org: Default
+    inv: "Automation Controller Inventory"
+    project: "Ansible EDA OpenTelemetry"
+    playbook: "playbooks/parse_payload.yaml"
+    creds:
+      - "Red Hat Ansible Automation Platform Credential"
+      - "OpenTelemetry Managed Host Credential"
+    use_fact_cache: false
+    ask_limit_on_launch: false
+    ask_variables_on_launch:  true
+    allow_simultaneous: true
+    execution_environment: "Default execution environment"
+
+  - name: "[JT] Remediate Nginx"
+    org: Default
+    inv: "Opentelemetry Inventory"
+    project: "Ansible EDA OpenTelemetry"
+    playbook: "playbooks/parse_payload.yaml"
+    creds:
+      - "OpenTelemetry Managed Host Credential"
+    use_fact_cache: false
+    ask_limit_on_launch: false
+    ask_variables_on_launch:  true
+    allow_simultaneous: true
+    execution_environment: "Default execution environment"
+

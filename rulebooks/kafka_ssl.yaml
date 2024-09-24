@@ -1,0 +1,24 @@
+- name: Process OpenTelemetry events
+  hosts: localhost
+  sources:
+    - ansible.eda.kafka:
+        host: 192.168.122.247
+        port: 9093
+        topic: otel-events
+        security_protocol: SSL
+        cafile: /etc/ssl/certs/ca.crt
+        certfile: /etc/ssl/certs/client.crt
+        keyfile: /etc/ssl/certs/client.key
+        check_hostname: false
+
+  rules:
+    - name: Trigger remediation
+      condition: event.body != ""
+      action:
+        run_job_template:
+          name: Parse Kafka Payload
+          organization: Default
+          job_args: 
+            extra_vars: 
+              kafka_message: "{{ event }}"
+

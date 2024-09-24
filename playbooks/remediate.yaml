@@ -1,0 +1,9 @@
+---
+- name: Trigger Remediation
+  hosts: nginx
+  gather_facts: false
+  tasks:
+
+    - name: Trigger Remediation
+      ansible.builtin.command: podman start opentelemetry_nginx_1
+

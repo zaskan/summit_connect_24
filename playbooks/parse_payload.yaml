@@ -1,0 +1,37 @@
+---
+- name: Open Ticket
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Parse payload
+      ansible.builtin.set_fact:
+        parsed_payload: "{{ kafka_message.body.resourceLogs[0].scopeLogs[0].logRecords[0].body.stringValue | from_json }}"
+
+    - name: Set facts
+      ansible.builtin.set_fact:
+        status: "{{ parsed_payload.status }}"
+        description: "{{ parsed_payload.alerts[0].annotations.description }}"
+        title: "{{ parsed_payload.alerts[0].annotations.summary }}"
+        date: "{{ parsed_payload.alerts[0].startsAt }}"
+
+    - name: Trigger Remediation Workflow
+      ansible.controller.workflow_launch:
+        workflow_template: "Remediation Pipeline"
+        extra_vars:
+          status: "{{ status }}"
+          description: "{{ description }}"
+          title: "{{ title }}"
+          date: "{{ date }}"
+      when: status == "firing"
+
+    - name: Trigger Resolution Job Template
+      ansible.controller.job_launch:
+        job_template: "Close Servicenow Ticket"
+        extra_vars:
+          status: "{{ status }}"
+          description: "{{ description }}"
+          title: "{{ title }}"
+          date: "{{ date }}"
+      when: status == "resolved"
+

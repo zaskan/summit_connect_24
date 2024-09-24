@@ -1,0 +1,11 @@
+groups:
+  - name: nginx_alerts
+    rules:
+    - alert: NginxDown
+      expr: probe_success == 0
+      for: 1s
+      labels:
+        severity: critical
+      annotations:
+        summary: "Nginx service is down"
+        description: "The Nginx service on {{ $labels.instance }} is unreachable."

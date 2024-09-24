@@ -1,0 +1,8 @@
+inventories: 
+  - name: "Automation Controller Inventory"
+    desc: "Automation Controller Inventory"
+    org: Default
+    vars: {}
+  - name: "Opentelemetry Inventory"
+    desc: "Opentelemetry Inventory"
+    org: Default

@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 5s
+
+route:
+  group_by: ['alertname']
+  group_wait: 1s
+  group_interval: 5s
+  repeat_interval: 1h
+  receiver: 'otel'
+
+receivers:
+  - name: 'otel'
+    webhook_configs:
+      - url: 'http://otel-collector:1979/events'
+        send_resolved: true

@@ -1,0 +1,4 @@
+eda_projects:
+  - name: ocp-event-driven
+    description: Ocp Event Driven Demo
+    url: "{{ telemetry_project_url }}"

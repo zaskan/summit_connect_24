@@ -1,0 +1,27 @@
+---
+- name: Open Ticket
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Open ServiceNow incident
+      servicenow.itsm.incident:
+        state: new
+        caller: "admin"
+        short_description: "{{ title }}"
+        description: "{{ description }}"
+        impact: "low"
+        urgency: "high"
+        other:
+          cause: "{{ date | b64encode }}"
+      register: incident
+
+    - name: Set ServiceNow incident state
+      servicenow.itsm.incident:
+        state: in_progress
+        number: "{{ incident.record.number }}"
+
+    - name: Set ServiceNow incident number
+      ansible.builtin.set_stats:
+        data:
+          incident: "{{ incident.record.number }}"

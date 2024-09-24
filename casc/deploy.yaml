@@ -1,0 +1,16 @@
+---
+- name: CasC Deploy
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Include vars
+      ansible.builtin.include_vars:
+        dir: vars
+
+    - name: Configure Ansible Controller
+      ansible.builtin.include_role: 
+        name: ansible_automation_platform.casc.controller
+      vars: 
+        controller_vars_dir: vars/controller/
+        eda_vars_dir: vars/eda/

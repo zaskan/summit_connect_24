@@ -1,0 +1,4 @@
+decision_environments:
+  - name: EDA Decision Environment
+    description: Servicenow Decision Environment
+    image_url: "quay.io/rhn_support_rafsanch/de-eda-rhel8:latest"

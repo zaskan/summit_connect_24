@@ -1,0 +1,23 @@
+---
+- name: Close Ticket
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Get Info From Incident 
+      servicenow.itsm.incident_info:
+        sysparm_query: "causeLIKE{{ date | b64encode }}"
+      register: result
+
+    - name: Close Incident
+      servicenow.itsm.api:
+        resource: incident
+        action: patch
+        sys_id: "{{ result.records[0].sys_id }}"
+        data:
+          state: 7
+          incident_state: 7
+          number: "{{ result.records[0].task_effective_number }}"
+          close_code: "Resolved by Event_driven Ansible"
+          close_notes: "Restarted Nginx Container"
+          caller: "admin"

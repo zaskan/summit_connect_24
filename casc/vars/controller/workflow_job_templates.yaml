@@ -1,32 +1,34 @@
 workflowjobtemplates:
-  - name: "[WF] Remediation Pipeline"
+  - name: "[WF] Test Remediation Pipeline"
     org: Default
     ask_variables_on_launch: true
     allow_simultaneous: false
     steps:
-       - identifier: "Open Servicenow Ticket"
-         unified_job_template:
-           organization: "Default"
-           name: "[JT] Open Servicenow Ticket"
-           type: workflow_approval
-           inv: "Automation Controller Inventory"
-         related:
-           success_nodes:
-             - identifier: "[JT] Remediate Nginx"
-       - identifier: "Remediate Nginx"
-         unified_job_template:
-           organization: "Default"
-           name: "[JT] Remediate Nginx"
-           type: workflow_approval
-           inv: "Opentelemetry Inventory"
-         related:
-           success_nodes:
-             - identifier: "[JT] Close Servicenow Ticket"
-       - identifier: "[JT] Close Servicenow Ticket"
-         unified_job_template:
-           organization:
-             name: Default
-           name: "[JT] Close Servicenow Ticket"
-           type: job_template
-           inv: "Automation Controller Inventory"
-
+      - identifier: "Open Servicenow Ticket"
+        unified_job_template:
+          organization: 
+            name: "Default"
+          name: "[JT] Open Servicenow Ticket"
+          type: job_template
+        related:
+          success_nodes:
+            - identifier: "Remediate Nginx"
+      - identifier: "Check Servicenow Ticket"
+        unified_job_template:
+          organization: 
+            name: "Default"
+          description: "Check Servicenow Ticket"
+          name: "Check Servicenow Ticket"
+          type: workflow_approval
+        related:
+          success_nodes:
+            - identifier: "Remediate Nginx"
+      - identifier: "Remediate Nginx"
+        unified_job_template:
+          organization:
+            name: "Default"
+          name: "[JT] Remediate Nginx"
+          type: job_template
+        related:
+          success_nodes:
+            - identifier: "[JT] Close Servicenow Ticket"

@@ -26,8 +26,8 @@
       when: status == "firing"
 
     - name: Trigger Acceptance Job Template
-      ansible.controller.job_launch:
-        job_template: "[WF] Acceptance Pipeline"
+      ansible.controller.workflow_launch:
+        workflow_template: "[WF] Acceptance Pipeline"
         extra_vars:
           status: "{{ status }}"
           description: "{{ description }}"

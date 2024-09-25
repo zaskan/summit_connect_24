@@ -7,6 +7,8 @@ users:
     superuser: false
     auditor: false
     roles:
+      - organization: "eda_opentelemetry_workshop"
+        role: member
       - credential: "ServiceNow Credential"
         role: use
       - credential: "OpenTelemetry Managed Host Credential"

@@ -2,3 +2,5 @@ controller_tokens:
   - description: 'Token for EDA'
     application: "Event-Driven Ansible"
     scope: "write"
+    controller_username: "summit24"
+    controller_password: "summit24"

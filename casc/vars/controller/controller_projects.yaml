@@ -1,7 +1,7 @@
 controller_projects:
   - name: "Ansible EDA OpenTelemetry"
     desc: "Ansible EDA OpenTelemetry"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     git_url: "{{ telemetry_project_url }}"
     git_branch: main
     update_on_launch: no

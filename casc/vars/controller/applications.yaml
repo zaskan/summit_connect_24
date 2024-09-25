@@ -1,7 +1,7 @@
 applications:
   - name: "Event-Driven Ansible"
     description: Event-Driven Ansible 
-    organization: "{{ default_organization | default('Default') }}"
+    organization: "eda_opentelemetry_workshop"
     state: present
     client_type: public
     auth_grant_type: password

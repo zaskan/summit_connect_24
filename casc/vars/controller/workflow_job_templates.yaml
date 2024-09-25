@@ -1,13 +1,13 @@
 workflowjobtemplates:
   - name: "[WF] Remediation Pipeline"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     ask_variables_on_launch: true
     allow_simultaneous: false
     steps:
       - identifier: "Open Servicenow Ticket"
         unified_job_template:
           organization: 
-            name: "{{ default_organization | default('Default') }}"
+            name: "eda_opentelemetry_workshop"
           name: "[JT] Open Servicenow Ticket"
           type: job_template
         related:
@@ -16,7 +16,7 @@ workflowjobtemplates:
       - identifier: "Check Servicenow Ticket"
         unified_job_template:
           organization: 
-            name: "{{ default_organization | default('Default') }}"
+            name: "eda_opentelemetry_workshop"
           description: "Check Servicenow Ticket"
           name: "Check Servicenow Ticket"
           type: workflow_approval
@@ -26,18 +26,18 @@ workflowjobtemplates:
       - identifier: "Remediate Nginx"
         unified_job_template:
           organization:
-            name: "{{ default_organization | default('Default') }}"
+            name: "eda_opentelemetry_workshop"
           name: "[JT] Remediate Nginx"
           type: job_template
   - name: "[WF] Acceptance Pipeline"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     ask_variables_on_launch: true
     allow_simultaneous: false
     steps:
       - identifier: "Accept resolution"
         unified_job_template:
           organization:
-            name: "{{ default_organization | default('Default') }}"
+            name: "eda_opentelemetry_workshop"
           description: "Accept resolution"
           name: "Accept resolution"
           type: workflow_approval
@@ -47,6 +47,6 @@ workflowjobtemplates:
       - identifier: "Close Servicenow Ticket"
         unified_job_template:
           organization:
-            name: "{{ default_organization | default('Default') }}"
+            name: "eda_opentelemetry_workshop"
           name: "[JT] Close Servicenow Ticket"
           type: job_template

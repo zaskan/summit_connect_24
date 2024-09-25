@@ -1,7 +1,7 @@
 inventories: 
   - name: "Automation Controller Inventory"
     desc: "Automation Controller Inventory"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
   - name: "Opentelemetry Inventory"
     desc: "Opentelemetry Inventory"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"

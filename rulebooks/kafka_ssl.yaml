@@ -17,7 +17,7 @@
       action:
         run_job_template:
           name: "[JT] Parse Kafka Payload"
-          organization: Default
+          organization: eda_opentelemetry_workshop
           job_args: 
             extra_vars: 
               kafka_message: "{{ event }}"

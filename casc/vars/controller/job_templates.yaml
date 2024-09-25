@@ -1,6 +1,6 @@
 jobtemplates:
   - name: "[JT] Open Servicenow Ticket"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/open_ticket.yaml"
@@ -14,7 +14,7 @@ jobtemplates:
     execution_environment: "Default execution environment"
 
   - name: "[JT] Close Servicenow Ticket"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/close_ticket.yaml"
@@ -28,7 +28,7 @@ jobtemplates:
     execution_environment: "Default execution environment"
 
   - name: "[JT] Parse Kafka Payload"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/parse_payload.yaml"
@@ -42,7 +42,7 @@ jobtemplates:
     execution_environment: "Default execution environment"
 
   - name: "[JT] Remediate Nginx"
-    org: "{{ default_organization | default('Default') }}"
+    org: "eda_opentelemetry_workshop"
     inv: "Opentelemetry Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/remediate.yaml"

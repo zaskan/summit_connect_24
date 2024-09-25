@@ -25,9 +25,9 @@
           date: "{{ date }}"
       when: status == "firing"
 
-    - name: Trigger Resolution Job Template
+    - name: Trigger Acceptance Job Template
       ansible.controller.job_launch:
-        job_template: "[JT] Close Servicenow Ticket"
+        job_template: "[WF] Acceptance Pipeline"
         extra_vars:
           status: "{{ status }}"
           description: "{{ description }}"

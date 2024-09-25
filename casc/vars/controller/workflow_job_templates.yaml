@@ -1,22 +1,22 @@
 workflowjobtemplates:
-  - name: "[WF] Test Remediation Pipeline"
-    org: Default
+  - name: "[WF] Remediation Pipeline"
+    org: "{{ default_organization | default('Default') }}"
     ask_variables_on_launch: true
     allow_simultaneous: false
     steps:
       - identifier: "Open Servicenow Ticket"
         unified_job_template:
           organization: 
-            name: "Default"
+            name: "{{ default_organization | default('Default') }}"
           name: "[JT] Open Servicenow Ticket"
           type: job_template
         related:
           success_nodes:
-            - identifier: "Remediate Nginx"
+            - identifier: "Check Servicenow Ticket"
       - identifier: "Check Servicenow Ticket"
         unified_job_template:
           organization: 
-            name: "Default"
+            name: "{{ default_organization | default('Default') }}"
           description: "Check Servicenow Ticket"
           name: "Check Servicenow Ticket"
           type: workflow_approval
@@ -26,9 +26,27 @@ workflowjobtemplates:
       - identifier: "Remediate Nginx"
         unified_job_template:
           organization:
-            name: "Default"
+            name: "{{ default_organization | default('Default') }}"
           name: "[JT] Remediate Nginx"
           type: job_template
+  - name: "[WF] Acceptance Pipeline"
+    org: "{{ default_organization | default('Default') }}"
+    ask_variables_on_launch: true
+    allow_simultaneous: false
+    steps:
+      - identifier: "Accept resolution"
+        unified_job_template:
+          organization:
+            name: "{{ default_organization | default('Default') }}"
+          description: "Accept resolution"
+          name: "Accept resolution"
+          type: workflow_approval
         related:
           success_nodes:
-            - identifier: "[JT] Close Servicenow Ticket"
+            - identifier: "Close Servicenow Ticket"
+      - identifier: "Close Servicenow Ticket"
+        unified_job_template:
+          organization:
+            name: "{{ default_organization | default('Default') }}"
+          name: "[JT] Close Servicenow Ticket"
+          type: job_template

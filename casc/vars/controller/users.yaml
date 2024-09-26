@@ -1,7 +1,7 @@
 users:
-  - username: "summit24"
-    password: "summit24"
-    email: "summit24@redhat.com"
+  - username: "eda_minilab"
+    password: "Summit24!"
+    email: "edaminilab@redhat.com"
     organization: "eda_opentelemetry_workshop"
     update_secrets: false
     superuser: false

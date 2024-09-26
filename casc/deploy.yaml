@@ -8,6 +8,10 @@
       ansible.builtin.include_vars:
         file: vars/custom.yaml
 
+    - name: Create Servicenow user
+      ansible.builtin.include_tasks: 
+        file: playbooks/servicenow.yaml
+
     - name: Configure Ansible Controller
       ansible.builtin.include_role: 
         name: ansible_automation_platform.casc.controller

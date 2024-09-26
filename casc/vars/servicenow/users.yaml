@@ -1,0 +1,4 @@
+users:
+  - username: "eda_minilab"
+    password: "Summit24!"
+    role: "sn_incident_read"

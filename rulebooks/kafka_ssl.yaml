@@ -2,7 +2,7 @@
   hosts: localhost
   sources:
     - ansible.eda.kafka:
-        host: 192.168.122.247
+        host: 10.10.10.146
         port: 9093
         topic: otel-events
         security_protocol: SSL

@@ -1,0 +1,5 @@
+eda_users:
+  - username: "eda_minilab"
+    password: "Summit24!"
+    roles: Viewer
+    state: present

@@ -5,5 +5,5 @@
   tasks:
 
     - name: Trigger Remediation
-      ansible.builtin.command: podman start opentelemetry_nginx_1
+      ansible.builtin.command: podman start nginx
 

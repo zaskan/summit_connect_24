@@ -167,7 +167,9 @@
         image: docker.io/nginx:1.27.1
         state: started
         volumes:
-          - "/opt/nginx/index.html:/usr/share/nginx/htmli/index.html:Z"
+          - "/opt/nginx/index.html:/usr/share/nginx/html/index.html:Z"
+          - "/opt/nginx/logo.png:/usr/share/nginx/html/logo.png:Z"
+          - "/opt/nginx/animation.gif:/usr/share/nginx/html/animation.gif:Z"
         ports:
           - "8080:80"
         network:

@@ -7,7 +7,3 @@ activations:
     enabled: true
     awx_token: "Ansible Controller"
     state: present
-    extra_vars:
-      instance: "{{ sn_host }}"
-      username: "{{ sn_username }}"
-      password: "{{ sn_password }}"

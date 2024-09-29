@@ -1,13 +1,14 @@
-## Playing with Opentelemetry and Kafka 
+## Red Hat Summit Connect 24 Madrid - Event-Driven Ansible / Opentelemetry Microlab
+### Prerequisites
 
-~~~
-podman network create otel-network
-podman-compose up -d 
-~~~
-Opentelemetry could fail if kafka is not ready yet - need to fix that. Repeat the command if it fails
+- 1 x Ansible Automation Platform Controller Host
+- 1 x Event-Driven Ansible Controller Host
+- 1 x Rhel 9 Machine (to install the Opentelemetry stack)
+- 1 x Servicenow test instance
 
-Write in the topic with:
+### Installation
 
-~~~
-curl -X POST http://localhost:4318/v1/traces -H "Content-Type: application/json" -d @trace.json
-~~~
+- Using ansible-galaxy, install the requirements file located in the *casc* directory
+- Copy and rename the file `casc/vars/custom.yaml.template` to a new file `casc/vars/custom.yaml`. Edit and provide the values accordingly.
+- Execute the command `ansible-playbook casc/deploy.yaml`
+

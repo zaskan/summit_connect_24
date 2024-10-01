@@ -1,0 +1,6 @@
+collections:
+  - name: containers.podman
+  - name: servicenow.itsm
+  - name: kubernetes.core
+  - name: ansible.controller
+  - name: infra.eda_configuration

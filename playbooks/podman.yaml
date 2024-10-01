@@ -1,0 +1,156 @@
+---
+- name: Start Opentelemetry Stack
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - ../casc/vars/custom.yaml
+
+  tasks:
+
+    - name: Deploy Zookeeper container
+      containers.podman.podman_container:
+        name: zookeeper
+        image: docker.io/confluentinc/cp-zookeeper:7.7.0
+        state: started
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+        ports:
+          - "2181:2181"
+        network:
+          - otel-network
+        force_delete: true
+        delete_depend: true
+      register: zookeeper
+      until: zookeeper.container.Id is defined
+
+    - name: Deploy Kafka container
+      containers.podman.podman_container:
+        name: kafka
+        requires: "{{ zookeeper.container.Id }}"
+        image: docker.io/bitnami/kafka:3.4.1
+        state: started
+        env:
+          KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
+          ALLOW_PLAINTEXT_LISTENER: "no"
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CLIENT:SSL,EXTERNAL:SSL"
+          KAFKA_CFG_LISTENERS: "CLIENT://:9092,EXTERNAL://:9093"
+          KAFKA_CFG_ADVERTISED_LISTENERS: "CLIENT://kafka:9092,EXTERNAL://{{ ansible_host }}:9093"
+          KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "CLIENT"
+          KAFKA_CFG_SSL_KEYSTORE_LOCATION: "/bitnami/kafka/config/certs/kafka.keystore.jks"
+          KAFKA_CFG_SSL_KEYSTORE_PASSWORD: "kafkacertpass"
+          KAFKA_CFG_SSL_KEY_PASSWORD: "kafkacertpass"
+          KAFKA_CFG_SSL_TRUSTSTORE_LOCATION: "/bitnami/kafka/config/certs/kafka.truststore.jks"
+          KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD: "kafkacertpass"
+          KAFKA_CFG_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+        volumes:
+          - "/opt/certs/kafka.keystore.jks:/bitnami/kafka/config/certs/kafka.keystore.jks:Z"
+          - "/opt/certs/kafka.truststore.jks:/bitnami/kafka/config/certs/kafka.truststore.jks:Z"
+        ports:
+          - "9093:9093"
+        network:
+          - otel-network
+        force_delete: true
+        delete_depend: true
+      register: kafka
+      until: kafka.container.Id is defined
+
+    - name: Wait for Kafka broker port to be open
+      wait_for:
+        host: "127.0.0.1"
+        port: "9093"
+        timeout: 300
+        state: started
+
+    - name: Deploy Opentelemetry collector container
+      containers.podman.podman_container:
+        name: otel-collector
+        requires: "{{ kafka.container.Id }}"
+        image: docker.io/otel/opentelemetry-collector-contrib:0.106.1
+        state: started
+        volumes:
+          - "/opt/opentelemetry/otel-collector-config.yaml:/etc/otel-collector-config.yaml:Z"
+          - "/opt/certs/ca.crt:/etc/otel/certs/ca.crt:Z"
+          - "/opt/certs/client.crt:/etc/otel/certs/client.crt:Z"
+          - "/opt/certs/client.key:/etc/otel/certs/client.key:Z"
+        ports:
+          - "4318:4318"
+          - "55680:55680"
+          - "1979:1979"
+          - "8888:8888"
+          - "13133:13133"
+          - "1777:1777"
+        network:
+          - otel-network
+        command: "--config=/etc/otel-collector-config.yaml"
+        force_delete: true
+        delete_depend: true
+      register: otel_collector
+      until: otel_collector.container.Id is defined
+
+    - name: Deploy Prometheus container
+      containers.podman.podman_container:
+        name: prometheus
+        requires: "{{ otel_collector.container.Id }}"
+        image: docker.io/prom/prometheus:v2.54.1
+        state: started
+        volumes:
+          - "/opt/opentelemetry/alert.rules.yml:/etc/prometheus/alert.rules.yml:Z"
+          - "/opt/opentelemetry/prometheus.yml:/etc/prometheus/prometheus.yml:Z"
+        ports:
+          - "9090:9090"
+        network:
+          - otel-network
+        command: "--config.file=/etc/prometheus/prometheus.yml"
+        force_delete: true
+        delete_depend: true
+      register: prometheus
+
+    - name: Deploy Alertmanager container
+      containers.podman.podman_container:
+        name: alertmanager
+        requires: "{{ prometheus.container.Id }}"
+        image: docker.io/prom/alertmanager:v0.27.0
+        state: started
+        volumes:
+          - "/opt/opentelemetry/alertmanager.yml:/etc/alertmanager/alertmanager.yml:Z"
+        ports:
+          - "9094:9094"
+        network:
+          - otel-network
+        command: "--config.file=/etc/alertmanager/alertmanager.yml"
+        force_delete: true
+        delete_depend: true
+      register: alertmanager
+
+    - name: Deploy Nginx container
+      containers.podman.podman_container:
+        name: nginx
+        requires: "{{ alertmanager.container.Id }}"
+        image: docker.io/nginx:1.27.1
+        state: started
+        volumes:
+          - "/opt/nginx/index.html:/usr/share/nginx/html/index.html:Z"
+          - "/opt/nginx/logo.png:/usr/share/nginx/html/logo.png:Z"
+          - "/opt/nginx/animation.gif:/usr/share/nginx/html/animation.gif:Z"
+        ports:
+          - "8080:80"
+        network:
+          - otel-network
+        force_delete: true
+        delete_depend: true
+      register: nginx
+
+    - name: Deploy Blackbox exporter container
+      containers.podman.podman_container:
+        name: blackbox
+        requires: "{{ nginx.container.Id }}"
+        image: docker.io/prom/blackbox-exporter:v0.25.0
+        state: started
+        ports:
+          - "9115:9115"
+        network:
+          - otel-network
+        force_delete: true
+        delete_depend: true
+~                                                                                                                                           

@@ -3,3 +3,4 @@ collections:
   - name: servicenow.itsm
   - name: kubernetes.core
   - name: infra.eda_configuration
+  - name: ansible.eda

@@ -55,7 +55,7 @@ jobtemplates:
     execution_environment: "Default execution environment"
 
   - name: "[JT] Restart Opentelemetry Stack"
-    org: "Default"
+    org: "eda_opentelemetry_workshop"
     inv: "Opentelemetry Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/podman.yaml"
@@ -68,7 +68,7 @@ jobtemplates:
     execution_environment: "Default execution environment"
 
   - name: "[JT] Clean Opentelemetry Jobs"
-    org: "Default"
+    org: "eda_opentelemetry_workshop"
     inv: "Opentelemetry Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/podman.yaml"

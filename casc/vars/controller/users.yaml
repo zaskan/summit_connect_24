@@ -1,5 +1,5 @@
 users:
-  - username: "eda_minilab"
+  - username: "user3"
     password: "Summit24!"
     email: "edaminilab@redhat.com"
     organization: "eda_opentelemetry_workshop"

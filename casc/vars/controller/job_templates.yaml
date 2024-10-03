@@ -54,3 +54,30 @@ jobtemplates:
     allow_simultaneous: true
     execution_environment: "Default execution environment"
 
+  - name: "[JT] Restart Opentelemetry Stack"
+    org: "Default"
+    inv: "Opentelemetry Inventory"
+    project: "Ansible EDA OpenTelemetry"
+    playbook: "playbooks/podman.yaml"
+    creds:
+      - "OpenTelemetry Managed Host Credential"
+    use_fact_cache: false
+    ask_limit_on_launch: false
+    ask_variables_on_launch:  false
+    allow_simultaneous: false
+    execution_environment: "Default execution environment"
+
+  - name: "[JT] Clean Opentelemetry Jobs"
+    org: "Default"
+    inv: "Opentelemetry Inventory"
+    project: "Ansible EDA OpenTelemetry"
+    playbook: "playbooks/podman.yaml"
+    creds:
+      - "Red Hat Ansible Automation Platform Credential"
+      - "Red Hat Event-Driven Ansible Credential"
+      - "ServiceNow Credential"
+    use_fact_cache: false
+    ask_limit_on_launch: false
+    ask_variables_on_launch:  false
+    allow_simultaneous: false
+    execution_environment: "Default execution environment"

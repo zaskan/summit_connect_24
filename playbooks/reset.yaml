@@ -135,4 +135,10 @@
         body_format: json
         body: '{"extra_vars": {"days": "0"}}'
 
+    - name: Checking tables
+      servicenow.itsm.incident:
+        state: absent
+        sys_id: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
+
+
 

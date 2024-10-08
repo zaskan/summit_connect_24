@@ -22,7 +22,6 @@ jobtemplates:
       - "Red Hat Ansible Automation Platform Credential"
       - "ServiceNow Credential"
       - "OpenTelemetry Managed Host Credential"
-      - "Servicenow Incidents Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
     ask_variables_on_launch:  true
@@ -67,6 +66,7 @@ jobtemplates:
       - "Red Hat Event-Driven Ansible Credential"
       - "ServiceNow Credential"
       - "Gitlab Credential"
+      - "Servicenow Incidents Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
     ask_variables_on_launch:  false

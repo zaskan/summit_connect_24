@@ -30,3 +30,7 @@
           close_code: "Resolved by Event_driven Ansible"
           close_notes: "Restarted Nginx Container"
           caller: "admin"
+
+    - name: Register Servicenow Info
+      ansible.controller.job_launch:
+        job_template: "[JT] Clean Demo Environment"

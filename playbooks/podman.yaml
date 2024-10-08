@@ -4,6 +4,19 @@
   gather_facts: false
   tasks:
 
+    - name: Delete Containers
+      containers.podman.podman_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - blackbox
+        - nginx
+        - alertmanager
+        - prometheus
+        - otel-collector
+        - kafka
+        - zookeeper
+
     - name: Deploy Zookeeper container
       containers.podman.podman_container:
         name: zookeeper
@@ -16,8 +29,6 @@
           - "2181:2181"
         network:
           - otel-network
-        force_delete: true
-        force_restart: true
         delete_depend: true
       register: zookeeper
       until: zookeeper.container.Id is defined
@@ -48,8 +59,6 @@
           - "9093:9093"
         network:
           - otel-network
-        force_delete: true
-        force_restart: true
         delete_depend: true
       register: kafka
       until: kafka.container.Id is defined
@@ -82,8 +91,6 @@
         network:
           - otel-network
         command: "--config=/etc/otel-collector-config.yaml"
-        force_delete: true
-        force_restart: true
         delete_depend: true
       register: otel_collector
       until: otel_collector.container.Id is defined
@@ -102,8 +109,6 @@
         network:
           - otel-network
         command: "--config.file=/etc/prometheus/prometheus.yml"
-        force_delete: true
-        force_restart: true
         delete_depend: true
       register: prometheus
 
@@ -120,8 +125,6 @@
         network:
           - otel-network
         command: "--config.file=/etc/alertmanager/alertmanager.yml"
-        force_delete: true
-        force_restart: true
         delete_depend: true
       register: alertmanager
 
@@ -139,8 +142,6 @@
           - "8080:80"
         network:
           - otel-network
-        force_delete: true
-        force_restart: true
         delete_depend: true
       register: nginx
 
@@ -154,6 +155,4 @@
           - "9115:9115"
         network:
           - otel-network
-        force_delete: true
-        force_restart: true
         delete_depend: true

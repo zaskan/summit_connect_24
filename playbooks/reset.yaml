@@ -12,7 +12,7 @@
 
     - name: Copy Original file
       copy:
-        dest: "sc24_casc/sc24_casc.yml"
+        dest: "sc24_casc/controller_job_templates.d/sc24_casc.yml"
         src: "sc24_casc.yml"
 
     - name: "Add output directory to git"

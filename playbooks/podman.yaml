@@ -17,6 +17,7 @@
         network:
           - otel-network
         force_delete: true
+        force_restart: true
         delete_depend: true
       register: zookeeper
       until: zookeeper.container.Id is defined

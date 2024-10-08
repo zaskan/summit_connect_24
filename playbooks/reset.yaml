@@ -23,7 +23,7 @@
           git config --global user.email "ansible@sc24.com"
           git add .
           git commit -m "Restored sc24_casc Original file. Automated Commit by Ansible" 
-          git push -c http.sslVerify=false --repo="https://user1:Summit24\\!@10.10.10.144:8888/root/sc24_casc.git"
+          git push -c http.sslVerify=false --repo="https://user1:Summit24!@10.10.10.144:8888/root/sc24_casc.git"
 
     - name: Reset OPS Execution Environment
       ansible.controller.job_template:

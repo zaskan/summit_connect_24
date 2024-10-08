@@ -14,7 +14,7 @@
         url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}/api/v2/users/"
         user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
         password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
-        method: POST
+        method: GET
         validate_certs: false
         force_basic_auth: true
         status_code:

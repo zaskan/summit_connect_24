@@ -13,7 +13,6 @@
         validate_certs: false
         force_basic_auth: true
         status_code: POST
-      loop: "{{ jobs.json.results }}"
 
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:

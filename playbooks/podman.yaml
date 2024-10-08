@@ -49,6 +49,7 @@
         network:
           - otel-network
         force_delete: true
+        force_restart: true
         delete_depend: true
       register: kafka
       until: kafka.container.Id is defined
@@ -82,6 +83,7 @@
           - otel-network
         command: "--config=/etc/otel-collector-config.yaml"
         force_delete: true
+        force_restart: true
         delete_depend: true
       register: otel_collector
       until: otel_collector.container.Id is defined
@@ -101,6 +103,7 @@
           - otel-network
         command: "--config.file=/etc/prometheus/prometheus.yml"
         force_delete: true
+        force_restart: true
         delete_depend: true
       register: prometheus
 
@@ -118,6 +121,7 @@
           - otel-network
         command: "--config.file=/etc/alertmanager/alertmanager.yml"
         force_delete: true
+        force_restart: true
         delete_depend: true
       register: alertmanager
 
@@ -136,6 +140,7 @@
         network:
           - otel-network
         force_delete: true
+        force_restart: true
         delete_depend: true
       register: nginx
 
@@ -150,4 +155,5 @@
         network:
           - otel-network
         force_delete: true
+        force_restart: true
         delete_depend: true

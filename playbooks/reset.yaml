@@ -16,7 +16,7 @@
           - 200
           - 201
         body_format: json
-        body: '{extra_vars: {days: "0"}}'
+        body: '{"extra_vars": {"days": "0"}}'
 
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:

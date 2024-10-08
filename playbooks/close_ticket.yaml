@@ -9,6 +9,15 @@
         sysparm_query: "causeLIKE{{ date | b64encode }}"
       register: result
 
+    - name: Register Servicenow Info
+      ansible.controller.credential:
+        name: "Servicenow Incidents Credential"
+        organization: "eda_opentelemetry_workshop"
+        state: present
+        credential_type: "ServiceNow Incidents"
+        inputs:
+          snow_incident: "{{ result.records[0].sys_id }}"
+
     - name: Close Incident
       servicenow.itsm.api:
         resource: incident

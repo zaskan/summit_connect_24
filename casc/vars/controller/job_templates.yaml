@@ -19,6 +19,7 @@ jobtemplates:
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/close_ticket.yaml"
     creds:
+      - "Red Hat Ansible Automation Platform Credential"
       - "ServiceNow Credential"
       - "OpenTelemetry Managed Host Credential"
     use_fact_cache: false

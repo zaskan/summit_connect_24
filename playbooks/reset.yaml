@@ -21,9 +21,10 @@
           - 200
       register: users
 
-    - name: Reset OPS Execution Environment
-      debug: 
-        msg: "{{ item.username }}"
+    - name: Delete non-wanted users
+      ansible.controller.user: 
+        username: "{{ item.username }}"
+        state: absent
       loop: "{{ users.json.results }}"
       when: 
         - item.username != "admin"

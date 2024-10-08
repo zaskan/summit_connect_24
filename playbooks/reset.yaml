@@ -148,3 +148,13 @@
         state: absent
         sys_id: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
       when: last_incident != "none"
+
+    - name: Clean credential
+      ansible.controller.credential:
+        name: "Servicenow Incidents Credential"
+        organization: "eda_opentelemetry_workshop"
+        state: present
+        credential_type: "ServiceNow Incidents"
+        inputs:
+          snow_incident: "none"
+

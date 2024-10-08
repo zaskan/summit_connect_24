@@ -7,6 +7,15 @@
   gather_facts: false
   tasks:
 
+    - name: Delete Rulebook Activation
+      ansible.eda.rulebook_activation:
+        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
+        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
+        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
+        validate_certs: false
+        name: "Kafka Rulebook Activation"
+        state: absent
+
     - name: Clone GIT Repository
       ansible.builtin.command: "git -c http.sslVerify=false clone https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git"
 
@@ -53,14 +62,6 @@
         - item.username != "user2"
         - item.username != "user3"
 
-    - name: Delete Rulebook Activation
-      ansible.eda.rulebook_activation:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
-        validate_certs: false
-        name: "Kafka Rulebook Activation"
-        state: absent
 
     - name: Wait for rulebook activation to be deleted
       ansible.eda.rulebook_activation_info:

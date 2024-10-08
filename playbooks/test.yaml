@@ -1,9 +1,0 @@
----
-- name: Reset Demo
-  hosts: localhost
-  gather_facts: false
-  tasks:
-
-    - name: Clone GIT Repository
-      ansible.builtin.command: "env"
-

@@ -12,6 +12,9 @@
         method: POST
         validate_certs: false
         force_basic_auth: true
+        status_code:
+          - 200
+          - 201
 
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:

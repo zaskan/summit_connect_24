@@ -80,3 +80,5 @@
         number: "{{ item.number }}"
       loop: "{{ incidents.record }}"
 
+- name: Include a playbook from a collection
+  ansible.builtin.import_playbook: podman.yaml

@@ -1,6 +1,6 @@
 ---
 - name: Start Opentelemetry Stack
-  hosts: all
+  hosts: nginx
   gather_facts: false
   tasks:
 

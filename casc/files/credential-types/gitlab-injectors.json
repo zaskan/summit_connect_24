@@ -1,0 +1,7 @@
+{
+  "env": {
+    "GITLAB_HOST": "{{ gitlab_host }}",
+    "GITLAB_PASSWORD": "{{ gitlab_password }}",
+    "GITLAB_USERNAME": "{{ gitlab_username }}"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "fields": [
+    {
+      "id": "gitlab_host",
+      "type": "string",
+      "label": "Gitlab Host"
+    },
+    {
+      "id": "gitlab_username",
+      "type": "string",
+      "label": "Gitlab Username"
+    },
+    {
+      "id": "gitlab_password",
+      "type": "string",
+      "label": "Gitlab Password",
+      "secret": true
+    }
+  ],
+  "required": [
+    "gitlab_host",
+    "gitlab_username",
+    "gitlab_password"
+  ]
+}

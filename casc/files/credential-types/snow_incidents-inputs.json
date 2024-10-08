@@ -1,0 +1,12 @@
+{
+  "fields": [
+    {
+      "id": "snow_incident",
+      "type": "string",
+      "label": "incident"
+    }
+  ],
+  "required": [
+    "snow_incident"
+  ]
+}

@@ -52,14 +52,21 @@
           - otel-network
         force_delete: true
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 2181"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_timeout: 2s
+        healthcheck_retries: 5
       register: zookeeper
-      until: zookeeper.container.Id is defined
+#      until: zookeeper.container.State.Health.Status is defined and zookeeper.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"
+
+    - debug: msg="{{ zookeeper.container.State.Health.Status }}"
 
     - name: Deploy Kafka container
       containers.podman.podman_container:
         name: kafka
-        requires: "{{ zookeeper.container.Id }}"
+        requires: "{{ zookeeper.container.Name }}"
         image: docker.io/bitnami/kafka:3.4.1
         state: started
         env:
@@ -84,22 +91,27 @@
           - otel-network
         force_delete: true
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 9092"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_timeout: 2s
+        healthcheck_retries: 5
       register: kafka
-      until: kafka.container.Id is defined
+      until: kafka.container.State.Health.Status is defined and kafka.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"
 
-    - name: Wait for Kafka broker port to be open
-      wait_for:
-        host: "127.0.0.1"
-        port: "9093"
-        timeout: 300
-        state: started
-      delegate_to: "{{ opentelemetry_host_name }}"
+#    - name: Wait for Kafka broker port to be open
+#      wait_for:
+#        host: "127.0.0.1"
+#        port: "9093"
+#        timeout: 300
+#        state: started
+#      delegate_to: "{{ opentelemetry_host_name }}"
 
     - name: Deploy Opentelemetry collector container
       containers.podman.podman_container:
         name: otel-collector
-        requires: "{{ kafka.container.Id }}"
+        requires: "{{ kafka.container.Name }}"
         image: docker.io/otel/opentelemetry-collector-contrib:0.106.1
         state: started
         volumes:
@@ -119,14 +131,19 @@
         command: "--config=/etc/otel-collector-config.yaml"
         force_delete: true
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 1979"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_retries: 5
+        healthcheck_timeout: 1s
       register: otel_collector
-      until: otel_collector.container.Id is defined
+      until: otel_collector.container.State.Health.Status is defined and otel_collector.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"
 
     - name: Deploy Prometheus container
       containers.podman.podman_container:
         name: prometheus
-        requires: "{{ otel_collector.container.Id }}"
+        requires: "{{ otel_collector.container.Name }}"
         image: docker.io/prom/prometheus:v2.54.1
         state: started
         volumes:
@@ -139,13 +156,19 @@
         command: "--config.file=/etc/prometheus/prometheus.yml"
         force_delete: true
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 9090"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_retries: 5
+        healthcheck_timeout: 1s
       register: prometheus
+      until: prometheus.container.State.Health.Status is defined and prometheus.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"
 
     - name: Deploy Alertmanager container
       containers.podman.podman_container:
         name: alertmanager
-        requires: "{{ prometheus.container.Id }}"
+        requires: "{{ prometheus.container.Name }}"
         image: docker.io/prom/alertmanager:v0.27.0
         state: started
         volumes:
@@ -157,13 +180,19 @@
         command: "--config.file=/etc/alertmanager/alertmanager.yml"
         force_delete: true
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 9094"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_retries: 5
+        healthcheck_timeout: 1s
       register: alertmanager
+      until: alertmanager.container.State.Health.Status is defined and alertmanager.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"
 
     - name: Deploy Nginx container
       containers.podman.podman_container:
         name: nginx
-        requires: "{{ alertmanager.container.Id }}"
+        requires: "{{ alertmanager.container.Name }}"
         image: docker.io/nginx:1.27.1
         state: started
         volumes:
@@ -176,19 +205,32 @@
           - otel-network
         force_delete: true
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 8080"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_retries: 5
+        healthcheck_timeout: 1s
       register: nginx
+      until: nginx.container.State.Health.Status is defined and nginx.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"
 
     - name: Deploy Blackbox exporter container
       containers.podman.podman_container:
         name: blackbox
-        requires: "{{ nginx.container.Id }}"
+        requires: "{{ nginx.container.Name }}"
         image: docker.io/prom/blackbox-exporter:v0.25.0
         state: started
         ports:
           - "9115:9115"
         network: 
           - otel-network
-        force_delete: true
+        force_delete: false
         delete_depend: true
+        healthcheck: "nc -zv 127.0.0.1 9115"
+        healthcheck_failure_action: restart
+        healthcheck_interval: 5s
+        healthcheck_retries: 5
+        healthcheck_timeout: 1s
+      register: blackbox
+      until: blackbox.container.State.Health.Status is defined and blackbox.container.State.Health.Status == "healthy"
       delegate_to: "{{ opentelemetry_host_name }}"

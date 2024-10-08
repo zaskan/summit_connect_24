@@ -6,9 +6,9 @@
 
     - name: Delete project update jobs
       ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST' }}/api/v2/system_job_templates/1/launch/"
-        user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME' }}"
-        password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD' }}"
+        url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}/api/v2/system_job_templates/1/launch/"
+        user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
         method: DELETE
         validate_certs: false
         force_basic_auth: true
@@ -16,18 +16,18 @@
 
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST' }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME' }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD' }}"
+        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
+        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
+        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
         validate_certs: false
         name: "Kafka Rulebook Activation"
         state: absent
 
     - name: Wait for rulebook activation to be deleted
       ansible.eda.rulebook_activation_info:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST' }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME' }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD' }}"
+        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
+        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
+        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
         name: "Kafka Rulebook Activation"
         validate_certs: false
       register: activation_status
@@ -35,9 +35,9 @@
 
     - name: Create Rulebook Activation
       ansible.eda.rulebook_activation:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST' }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME' }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD' }}"
+        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
+        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
+        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
         validate_certs: false
         name: "Kafka Rulebook Activation"
         description: "Kafka Rulebook Activation"
@@ -50,9 +50,9 @@
 
     - name: Wait for rulebook activation to be running
       ansible.eda.rulebook_activation_info:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST' }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME' }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD' }}"
+        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
+        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
+        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
         name: "Kafka Rulebook Activation"
         validate_certs: false
       register: activation_status
@@ -61,17 +61,17 @@
     - name: Retrieve all incidents
       servicenow.itsm.api_info:
         instance:
-          host: "{{ lookup('ansible.builtin.env', 'SN_HOST' }}"
-          username: "{{ lookup('ansible.builtin.env', 'SN_USERNAME' }}"
-          password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD' }}"
+          host: "{{ lookup('ansible.builtin.env', 'SN_HOST') }}"
+          username: "{{ lookup('ansible.builtin.env', 'SN_USERNAME') }}"
+          password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD') }}"
         resource: incident
       register: incidents
 
     - servicenow.itsm.incident:
         instance:
-          host: "{{ lookup('ansible.builtin.env', 'SN_HOST' }}"
-          username: "{{ lookup('ansible.builtin.env', 'SN_USERNAME' }}"
-          password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD' }}"
+          host: "{{ lookup('ansible.builtin.env', 'SN_HOST') }}"
+          username: "{{ lookup('ansible.builtin.env', 'SN_USERNAME') }}"
+          password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD') }}"
         state: absent
         number: "{{ item.number }}"
       loop: "{{ incidents.record }}"

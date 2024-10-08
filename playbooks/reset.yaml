@@ -8,11 +8,11 @@
   tasks:
 
     - name: Clone GIT Repository
-      ansible.builtin.command: "git -c http.sslVerify=false clone https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git /tmp/sc24_casc"
+      ansible.builtin.command: "git -c http.sslVerify=false clone https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git"
 
     - name: Copy Original file
       copy:
-        dest: "/tmp/sc24_casc/sc24_casc.yml"
+        dest: "sc24_casc/sc24_casc.yml"
         src: "sc24_casc.yml"
 
     - name: "Add output directory to git"

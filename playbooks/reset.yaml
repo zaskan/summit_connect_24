@@ -8,7 +8,7 @@
   tasks:
 
     - name: Clone GIT Repository
-      ansible.builtin.command: "git -c http.sslVerify=false clone https://10.10.10.144:8888/root/sc24_casc.git /tmp"
+      ansible.builtin.command: "git -c http.sslVerify=false clone https://10.10.10.144:8888/root/sc24_casc.git /tmp/sc24_casc"
 
     - name: Copy Original file
       copy:

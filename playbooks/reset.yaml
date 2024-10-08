@@ -23,7 +23,13 @@
 
     - name: Reset OPS Execution Environment
       debug: 
-        msg: "{{ users }}"
+        msg: "{{ item.username }}"
+      loop: "{{ users.json.results }}"
+      when: 
+        - item.username != "admin"
+        - item.username != "user1"
+        - item.username != "user2"
+        - item.username != "user3"
 
     - name: Delete project update jobs
       ansible.builtin.uri:

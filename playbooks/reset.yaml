@@ -17,7 +17,7 @@
 
     - name: "Add output directory to git"
       ansible.builtin.shell:
-        chdir: /tmp/sc24_casc
+        chdir: sc24_casc
         cmd: |
           git config --global user.name "Ansible"
           git config --global user.email "ansible@sc24.com"

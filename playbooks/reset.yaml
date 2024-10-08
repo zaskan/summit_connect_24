@@ -4,6 +4,11 @@
   gather_facts: false
   tasks:
 
+    - name: Reset OPS Execution Environment
+      ansible.controller.job_template:
+        name: "[OPS] Añadir usuario a operaciones"
+        execution_environment: "Minimal execution environment"
+
     - name: Delete project update jobs
       ansible.builtin.uri:
         url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}/api/v2/system_job_templates/1/launch/"

@@ -103,6 +103,10 @@
       register: activation_status
       until: activation_status.activations[0] is defined and activation_status.activations[0].status == "running"
 
+    - name: Get previous incident
+      ansible.builtin.set_fact:
+        last_incident: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
+
     - name: Retrieve all incidents
       servicenow.itsm.api_info:
         instance:
@@ -111,6 +115,7 @@
           password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD') }}"
         resource: incident
       register: incidents
+      when: last_incident == "none"
 
     - servicenow.itsm.incident:
         instance:
@@ -120,6 +125,7 @@
         state: absent
         number: "{{ item.number }}"
       loop: "{{ incidents.record }}"
+      when: last_incident == "none"
 
     - name: Delete project update jobs
       ansible.builtin.uri:
@@ -139,6 +145,4 @@
       servicenow.itsm.incident:
         state: absent
         sys_id: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
-
-
-
+      when: last_incident != "none"

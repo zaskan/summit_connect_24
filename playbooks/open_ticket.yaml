@@ -4,6 +4,11 @@
   gather_facts: false
   tasks:
 
+    - name: Checking tables
+      servicenow.itsm.incident:
+        state: absent
+        sys_id: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
+
     - name: Open ServiceNow incident
       servicenow.itsm.incident:
         state: new

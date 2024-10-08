@@ -107,6 +107,8 @@
       ansible.builtin.set_fact:
         last_incident: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
 
+    - debug: msg="{{ last_incident }}"
+
     - name: Retrieve all incidents
       servicenow.itsm.api_info:
         instance:

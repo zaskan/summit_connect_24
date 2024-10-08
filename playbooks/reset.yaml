@@ -19,6 +19,7 @@
       ansible.builtin.shell:
         chdir: /tmp/sc24_casc
         cmd: |
+          git config --global http.sslVerify=false
           git config --global user.name "Ansible"
           git config --global user.email "ansible@sc24.com"
           git add .

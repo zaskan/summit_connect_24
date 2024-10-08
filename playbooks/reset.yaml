@@ -9,10 +9,9 @@
         url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}/api/v2/system_job_templates/1/launch/"
         user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
         password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
-        method: DELETE
+        method: POST
         validate_certs: false
         force_basic_auth: true
-        status_code: POST
 
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:

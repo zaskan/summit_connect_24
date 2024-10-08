@@ -8,7 +8,7 @@
   tasks:
 
     - name: Clone GIT Repository
-      ansible.builtin.command: "git -c http.sslVerify=false clone https://user1:Summit24\\!@10.10.10.144:8888/root/sc24_casc.git /tmp/sc24_casc"
+      ansible.builtin.command: "git -c http.sslVerify=false clone https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git /tmp/sc24_casc"
 
     - name: Copy Original file
       copy:
@@ -23,7 +23,7 @@
           git config --global user.email "ansible@sc24.com"
           git add .
           git commit -m "Restored sc24_casc Original file. Automated Commit by Ansible" 
-          git -c http.sslVerify=false push --repo="https://user1:Summit24\\!@10.10.10.144:8888/root/sc24_casc.git"
+          git -c http.sslVerify=false push --repo="https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git"
 
     - name: Reset OPS Execution Environment
       ansible.controller.job_template:

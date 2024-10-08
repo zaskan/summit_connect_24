@@ -1,0 +1,20 @@
+---
+controller_templates:
+  - name: "{{ orgs }} Old_JT_summit24"
+    description: "Playbook to test CD of CasC"
+    organization: "{{ orgs }}"
+    project: "{{ orgs }} CasC_Data"
+    inventory: "{{ orgs }} Localhost"
+    playbook: "debug_old.yml"
+    job_type: run
+    credentials:
+      - "{{ orgs }} Vault Credential"
+  # - name: "{{ orgs }} New_JT_CasC_summit24"
+  #   description: "Playbook to test CD of CasC"
+  #   organization: "{{ orgs }}"
+  #   project: "{{ orgs }} CasC_Data"
+  #   inventory: "{{ orgs }} Localhost"
+  #   playbook: "debug_new.yml"
+  #   job_type: run
+  #   credentials:
+  #     - "{{ orgs }} Vault Credential"

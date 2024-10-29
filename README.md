@@ -13,6 +13,6 @@
 - Copy and rename the file `casc/vars/custom.yaml.template` to a new file `casc/vars/custom.yaml`. Edit and provide the values accordingly.
 - Execute the command `ansible-playbook casc/deploy.yaml`
 
-### Lab guide #
+### Lab guide ##
 
 https://redhat-iberia.github.io/microlab-aap-eda

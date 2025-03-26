@@ -4,6 +4,8 @@
   gather_facts: false
   tasks:
 
+    - debug: msg="{{ rafa }}"
+
     - name: Delete Containers
       containers.podman.podman_container:
         name: "{{ item }}"

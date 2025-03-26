@@ -4,7 +4,7 @@
   gather_facts: false
   tasks:
 
-    - debug: msg="{{ este es un mensaje que contiene la hora:}} {{ ansible_date_time.iso8601 }} "
+    - debug: msg="Este es un mensaje que contiene la hora: {{ ansible_date_time.iso8601 }}"
 
     - name: Delete Containers
       containers.podman.podman_container:

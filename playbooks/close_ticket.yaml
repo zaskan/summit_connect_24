@@ -4,7 +4,7 @@
   gather_facts: false
   tasks:
 
-    - name: Get Info From Incident 
+    - name: Get Info From Incident
       servicenow.itsm.incident_info:
         sysparm_query: "causeLIKE{{ date | b64encode }}"
       register: result

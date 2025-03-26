@@ -16,6 +16,10 @@
         - otel-collector
         - kafka
         - zookeeper
+      register: deleted
+
+    - ansible.builtin.debug:
+        msg: "{{ deleted }}"
 
     - name: Deploy Zookeeper container
       containers.podman.podman_container:
@@ -32,6 +36,9 @@
         delete_depend: true
       register: zookeeper
       until: zookeeper.container.Id is defined
+
+    - ansible.builtin.debug:
+        msg: "{{ zookeper }}"
 
     - name: Deploy Kafka container
       containers.podman.podman_container:
@@ -63,12 +70,19 @@
       register: kafka
       until: kafka.container.Id is defined
 
+    - ansible.builtin.debug:
+        msg: "{{ kafka }}"
+
     - name: Wait for Kafka broker port to be open
       wait_for:
         host: "127.0.0.1"
         port: "9093"
         timeout: 300
         state: started
+      register: port
+
+    - ansible.builtin.debug:
+        msg: "{{ port }}"
 
     - name: Deploy Opentelemetry collector container
       containers.podman.podman_container:
@@ -95,6 +109,9 @@
       register: otel_collector
       until: otel_collector.container.Id is defined
 
+    - ansible.builtin.debug:
+        msg: "{{ otel_collector }}"
+
     - name: Deploy Prometheus container
       containers.podman.podman_container:
         name: prometheus
@@ -112,6 +129,9 @@
         delete_depend: true
       register: prometheus
 
+    - ansible.builtin.debug:
+        msg: "{{ prometheus }}"
+
     - name: Deploy Alertmanager container
       containers.podman.podman_container:
         name: alertmanager
@@ -127,6 +147,9 @@
         command: "--config.file=/etc/alertmanager/alertmanager.yml"
         delete_depend: true
       register: alertmanager
+
+    - ansible.builtin.debug:
+        msg: "{{ alertmanager }}"
 
     - name: Deploy Nginx container
       containers.podman.podman_container:
@@ -145,6 +168,9 @@
         delete_depend: true
       register: nginx
 
+    - ansible.builtin.debug:
+        msg: "{{ nginx }}"
+
     - name: Deploy Blackbox exporter container
       containers.podman.podman_container:
         name: blackbox
@@ -156,3 +182,13 @@
         network:
           - otel-network
         delete_depend: true
+      register: blackbox
+
+    - ansible.builtin.debug:
+        msg: "{{ blackbox }}"
+
+    - ansible.builtin.command: podman container ls -a
+      register: podman_cmd
+
+    - ansible.builtin.debug:
+        msg: "{{ podman_cmd }}"

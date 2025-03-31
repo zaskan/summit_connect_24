@@ -41,7 +41,7 @@
       until: zookeeper.container.Id is defined
 
     - ansible.builtin.debug:
-        msg: "{{ zookeper }}"
+        msg: "{{ zookeeper }}"
 
     - name: Deploy Kafka container
       containers.podman.podman_container:

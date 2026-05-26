@@ -1,9 +1,8 @@
 ---
-- name: Reset Demo
+- name: Reset Demo — disable EDA activation
   hosts: localhost
   gather_facts: false
   tasks:
-
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:
         controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
@@ -13,61 +12,13 @@
         name: "Kafka Rulebook Activation"
         state: absent
 
-- name: Include a playbook from a collection
-  ansible.builtin.import_playbook: podman.yaml
+- name: Redeploy OpenShift demo stack
+  ansible.builtin.import_playbook: ../casc/playbooks/openshift_stack.yaml
 
-- name: Reset Demo
+- name: Reset Demo — EDA, ITSM, credentials
   hosts: localhost
   gather_facts: false
   tasks:
-
-    - name: Clone GIT Repository
-      ansible.builtin.command: "git -c http.sslVerify=false clone https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git"
-
-    - name: Copy Original file
-      copy:
-        dest: "sc24_casc/controller_job_templates.d/sc24_casc.yml"
-        src: "sc24_casc.yml"
-
-    - name: "Add output directory to git"
-      ansible.builtin.shell:
-        chdir: sc24_casc
-        cmd: |
-          git config --global user.name "Ansible"
-          git config --global user.email "ansible@sc24.com"
-          git add .
-          git commit -m "Restored sc24_casc Original file. Automated Commit by Ansible" 
-          git -c http.sslVerify=false push --repo="https://{{ lookup('ansible.builtin.env', 'GITLAB_USERNAME') }}:{{ lookup('ansible.builtin.env', 'GITLAB_PASSWORD') }}@{{ lookup('ansible.builtin.env', 'GITLAB_HOST') }}/root/sc24_casc.git"
-
-    - name: Reset OPS Execution Environment
-      ansible.controller.job_template:
-        name: "[OPS] Añadir usuario a operaciones"
-        execution_environment: "Minimal execution environment"
-
-    - name: Retrieve current users
-      ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}/api/v2/users/"
-        user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
-        method: GET
-        validate_certs: false
-        force_basic_auth: true
-        status_code:
-          - 200
-      register: users
-
-    - name: Delete non-wanted users
-      ansible.controller.user: 
-        username: "{{ item.username }}"
-        state: absent
-      loop: "{{ users.json.results }}"
-      when: 
-        - item.username != "admin"
-        - item.username != "user1"
-        - item.username != "user2"
-        - item.username != "user3"
-
-
     - name: Wait for rulebook activation to be deleted
       ansible.eda.rulebook_activation_info:
         controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
@@ -77,6 +28,8 @@
         validate_certs: false
       register: activation_status
       until: activation_status.activations[0] is not defined
+      retries: 30
+      delay: 5
 
     - name: Create Rulebook Activation
       ansible.eda.rulebook_activation:
@@ -87,7 +40,7 @@
         name: "Kafka Rulebook Activation"
         description: "Kafka Rulebook Activation"
         project_name: "OpenTelemetry EDA Project"
-        rulebook_name: kafka_ssl.yaml
+        rulebook_name: kafka.yaml
         decision_environment_name: EDA Decision Environment
         enabled: true
         awx_token_name: "Ansible Controller"
@@ -102,32 +55,60 @@
         validate_certs: false
       register: activation_status
       until: activation_status.activations[0] is defined and activation_status.activations[0].status == "running"
+      retries: 30
+      delay: 10
 
-    - name: Get previous incident
-      ansible.builtin.set_fact:
-        last_incident: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
+    - name: List open ITSM incidents
+      ansible.builtin.uri:
+        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents?status=open"
+        method: GET
+        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+        force_basic_auth: true
+        validate_certs: false
+        status_code: 200
+      register: open_incidents
+      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') == 'none'
 
-    - debug: msg="{{ last_incident }}"
+    - name: Close open ITSM incidents
+      ansible.builtin.uri:
+        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents/{{ item.public_id }}/close"
+        method: POST
+        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+        force_basic_auth: true
+        validate_certs: false
+        status_code: [200, 201]
+        body_format: json
+        body:
+          comment: "Closed by demo reset automation"
+      loop: "{{ open_incidents.json }}"
+      when:
+        - lookup('ansible.builtin.env', 'ITSM_INCIDENT') == 'none'
+        - open_incidents.json is defined
 
-    - name: Retrieve all incidents
-      servicenow.itsm.api_info:
-        instance:
-          host: "{{ lookup('ansible.builtin.env', 'SN_HOST') }}"
-          username: "{{ lookup('ansible.builtin.env', 'SN_USERNAME') }}"
-          password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD') }}"
-        resource: incident
-      register: incidents
-      when: last_incident == "none"
+    - name: Close tracked ITSM incident
+      ansible.builtin.uri:
+        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents/{{ lookup('ansible.builtin.env', 'ITSM_INCIDENT') }}/close"
+        method: POST
+        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+        force_basic_auth: true
+        validate_certs: false
+        status_code: [200, 201]
+        body_format: json
+        body:
+          comment: "Closed by demo reset automation"
+      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') != 'none'
 
-    - servicenow.itsm.incident:
-        instance:
-          host: "{{ lookup('ansible.builtin.env', 'SN_HOST') }}"
-          username: "{{ lookup('ansible.builtin.env', 'SN_USERNAME') }}"
-          password: "{{ lookup('ansible.builtin.env', 'SN_PASSWORD') }}"
-        state: absent
-        number: "{{ item.number }}"
-      loop: "{{ incidents.record }}"
-      when: last_incident == "none"
+    - name: Reset ITSM Incidents credential
+      ansible.controller.credential:
+        name: "ITSM Incidents Credential"
+        organization: "eda_opentelemetry_workshop"
+        state: present
+        credential_type: "ITSM Incidents"
+        inputs:
+          itsm_incident: "none"
 
     - name: Delete project update jobs
       ansible.builtin.uri:
@@ -142,19 +123,3 @@
           - 201
         body_format: json
         body: '{"extra_vars": {"days": "0"}}'
-
-    - name: Checking tables
-      servicenow.itsm.incident:
-        state: absent
-        sys_id: "{{ lookup('ansible.builtin.env', 'SNOW_INCIDENT') }}"
-      when: last_incident != "none"
-
-    - name: Clean credential
-      ansible.controller.credential:
-        name: "Servicenow Incidents Credential"
-        organization: "eda_opentelemetry_workshop"
-        state: present
-        credential_type: "ServiceNow Incidents"
-        inputs:
-          snow_incident: "none"
-

@@ -1,0 +1,7 @@
+{
+  "env": {
+    "ITSM_HOST": "{{ itsm_host }}",
+    "ITSM_USERNAME": "{{ itsm_username }}",
+    "ITSM_PASSWORD": "{{ itsm_password }}"
+  }
+}

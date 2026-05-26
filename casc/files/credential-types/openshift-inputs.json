@@ -1,0 +1,26 @@
+{
+  "fields": [
+    {
+      "id": "openshift_api_host",
+      "type": "string",
+      "label": "OpenShift API host"
+    },
+    {
+      "id": "openshift_api_token",
+      "type": "string",
+      "label": "OpenShift API token",
+      "secret": true
+    },
+    {
+      "id": "openshift_namespace",
+      "type": "string",
+      "label": "Target namespace",
+      "default": "otel-demo"
+    }
+  ],
+  "required": [
+    "openshift_api_host",
+    "openshift_api_token",
+    "openshift_namespace"
+  ]
+}

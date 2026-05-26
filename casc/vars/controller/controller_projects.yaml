@@ -3,5 +3,5 @@ controller_projects:
     desc: "Ansible EDA OpenTelemetry"
     org: "eda_opentelemetry_workshop"
     git_url: "{{ telemetry_project_url }}"
-    git_branch: main
+    git_branch: openshift
     update_on_launch: no

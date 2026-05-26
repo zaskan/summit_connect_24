@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: otel-demo
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
+      evaluation_interval: 5s
+      external_labels:
+        namespace: otel-demo
+    scrape_configs:
+      - job_name: nginx
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        static_configs:
+          - targets:
+              - nginx:80
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox:9115
+    alerting:
+      alertmanagers:
+        - scheme: https
+          tls_config:
+            insecure_skip_verify: true
+          static_configs:
+            - targets:
+                - alertmanager-main.openshift-monitoring.svc:9094
+    rule_files:
+      - /etc/prometheus/alert.rules.yml
+  alert.rules.yml: |
+    groups:
+      - name: nginx_alerts
+        rules:
+          - alert: NginxDown
+            expr: probe_success == 0
+            for: 1s
+            labels:
+              severity: critical
+            annotations:
+              summary: Nginx service is down
+              description: The Nginx service on {{ $labels.instance }} is unreachable.

@@ -1,9 +1,14 @@
 ---
 - name: Trigger Remediation
-  hosts: all
+  hosts: localhost
   gather_facts: false
   tasks:
-
-    - name: Trigger Remediation
-      ansible.builtin.command: podman start nginx
-
+    - name: Restore nginx deployment on OpenShift
+      kubernetes.core.k8s_scale:
+        api_version: apps/v1
+        kind: Deployment
+        name: nginx
+        namespace: "{{ lookup('ansible.builtin.env', 'OPENSHIFT_NAMESPACE') }}"
+        replicas: 1
+        wait: true
+        wait_timeout: 300

@@ -3,34 +3,31 @@
   hosts: localhost
   gather_facts: false
   tasks:
+    - name: Close ITSM incident
+      ansible.builtin.uri:
+        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents/{{ lookup('ansible.builtin.env', 'ITSM_INCIDENT') }}/close"
+        method: POST
+        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+        force_basic_auth: true
+        validate_certs: false
+        status_code: [200, 201]
+        body_format: json
+        body:
+          comment: "Resolved by Event-Driven Ansible — nginx deployment restored on OpenShift"
+      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') != 'none'
 
-    - name: Get Info From Incident
-      servicenow.itsm.incident_info:
-        sysparm_query: "causeLIKE{{ date | b64encode }}"
-      register: result
-
-    - name: Register Servicenow Info
+    - name: Reset ITSM Incidents credential
       ansible.controller.credential:
-        name: "Servicenow Incidents Credential"
+        name: "ITSM Incidents Credential"
         organization: "eda_opentelemetry_workshop"
         state: present
-        credential_type: "ServiceNow Incidents"
+        credential_type: "ITSM Incidents"
         inputs:
-          snow_incident: "{{ result.records[0].sys_id }}"
+          itsm_incident: "none"
+      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') != 'none'
 
-    - name: Close Incident
-      servicenow.itsm.api:
-        resource: incident
-        action: patch
-        sys_id: "{{ result.records[0].sys_id }}"
-        data:
-          state: 7
-          incident_state: 7
-          number: "{{ result.records[0].task_effective_number }}"
-          close_code: "Resolved by Event_driven Ansible"
-          close_notes: "Restarted Nginx Container"
-          caller: "admin"
-
-    - name: Register Servicenow Info
+    - name: Launch clean demo job template
       ansible.controller.job_launch:
         job_template: "[JT] Clean Demo Environment"
+      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') != 'none'

@@ -2,7 +2,7 @@ activations:
   - name: Kafka Rulebook Activation
     description: Kafka Rulebook Activation
     project: "OpenTelemetry EDA Project"
-    rulebook: kafka_ssl.yaml
+    rulebook: kafka.yaml
     decision_environment: EDA Decision Environment
     enabled: true
     awx_token: "Ansible Controller"

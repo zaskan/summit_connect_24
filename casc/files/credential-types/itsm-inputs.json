@@ -1,0 +1,25 @@
+{
+  "fields": [
+    {
+      "id": "itsm_host",
+      "type": "string",
+      "label": "ITSM Host"
+    },
+    {
+      "id": "itsm_username",
+      "type": "string",
+      "label": "ITSM Username"
+    },
+    {
+      "id": "itsm_password",
+      "type": "string",
+      "label": "ITSM Password",
+      "secret": true
+    }
+  ],
+  "required": [
+    "itsm_host",
+    "itsm_username",
+    "itsm_password"
+  ]
+}

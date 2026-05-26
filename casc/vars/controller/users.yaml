@@ -9,9 +9,9 @@ users:
     roles:
       - organization: "eda_opentelemetry_workshop"
         role: member
-      - credential: "ServiceNow Credential"
+      - credential: "ITSM Credential"
         role: use
-      - credential: "OpenTelemetry Managed Host Credential"
+      - credential: "OpenShift Demo Credential"
         role: use
       - inventory: "Opentelemetry Inventory"
         role: use
@@ -23,9 +23,9 @@ users:
         role: use
       - project: "Ansible EDA OpenTelemetry"
         role: update
-      - job_template: "[JT] Close Servicenow Ticket"
+      - job_template: "[JT] Close ITSM Ticket"
         role: execute
-      - job_template: "[JT] Open Servicenow Ticket"
+      - job_template: "[JT] Open ITSM Ticket"
         role: execute
       - job_template: "[JT] Parse Kafka Payload"
         role: execute

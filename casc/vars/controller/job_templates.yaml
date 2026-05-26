@@ -1,30 +1,31 @@
 jobtemplates:
-  - name: "[JT] Open Servicenow Ticket"
+  - name: "[JT] Open ITSM Ticket"
     org: "eda_opentelemetry_workshop"
     inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/open_ticket.yaml"
     creds:
-      - "ServiceNow Credential"
-      - "OpenTelemetry Managed Host Credential"
+      - "ITSM Credential"
+      - "ITSM Incidents Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
-    ask_variables_on_launch:  true
+    ask_variables_on_launch: true
     allow_simultaneous: true
     execution_environment: "Default execution environment"
 
-  - name: "[JT] Close Servicenow Ticket"
+  - name: "[JT] Close ITSM Ticket"
     org: "eda_opentelemetry_workshop"
     inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/close_ticket.yaml"
     creds:
       - "Red Hat Ansible Automation Platform Credential"
-      - "ServiceNow Credential"
-      - "OpenTelemetry Managed Host Credential"
+      - "ITSM Credential"
+      - "ITSM Incidents Credential"
+      - "OpenShift Demo Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
-    ask_variables_on_launch:  true
+    ask_variables_on_launch: true
     allow_simultaneous: true
     execution_environment: "Default execution environment"
 
@@ -35,40 +36,38 @@ jobtemplates:
     playbook: "playbooks/parse_payload.yaml"
     creds:
       - "Red Hat Ansible Automation Platform Credential"
-      - "OpenTelemetry Managed Host Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
-    ask_variables_on_launch:  true
+    ask_variables_on_launch: true
     allow_simultaneous: true
     execution_environment: "Default execution environment"
 
   - name: "[JT] Remediate Nginx"
     org: "eda_opentelemetry_workshop"
-    inv: "Opentelemetry Inventory"
+    inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/remediate.yaml"
     creds:
-      - "OpenTelemetry Managed Host Credential"
+      - "OpenShift Demo Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
-    ask_variables_on_launch:  true
+    ask_variables_on_launch: true
     allow_simultaneous: true
     execution_environment: "Default execution environment"
 
   - name: "[JT] Clean Demo Environment"
     org: "eda_opentelemetry_workshop"
-    inv: "Opentelemetry Inventory"
+    inv: "Automation Controller Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/reset.yaml"
     creds:
-      - "OpenTelemetry Managed Host Credential"
       - "Red Hat Ansible Automation Platform Credential"
       - "Red Hat Event-Driven Ansible Credential"
-      - "ServiceNow Credential"
-      - "Gitlab Credential"
-      - "Servicenow Incidents Credential"
+      - "ITSM Credential"
+      - "ITSM Incidents Credential"
+      - "OpenShift Demo Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
-    ask_variables_on_launch:  false
+    ask_variables_on_launch: false
     allow_simultaneous: false
     execution_environment: "Default execution environment"

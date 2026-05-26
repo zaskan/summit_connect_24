@@ -1,18 +1,21 @@
-controller_host:
-controller_username:
+# Ansible Automation Platform (OpenShift)
+controller_host: https://ansible-controller-aap.apps.ocp.zaskan.es
+controller_username: admin
 controller_password:
 
-eda_host:
-eda_username:
+eda_host: https://ansible-eda-aap.apps.ocp.zaskan.es
+eda_username: admin
 eda_password:
 
-sn_host:
-sn_username:
-sn_password:
+# Git project (branch openshift must exist on remote)
+telemetry_project_url: https://github.com/zaskan/summit_connect_24.git
 
-telemetry_project_url:
-opentelemetry_host_ip:
-opentelemetry_host_name:
-opentelemetry_host_username:
-opentelemetry_host_password:
+# ITSM app (bootstrap admin from itsm-app namespace)
+itsm_host: https://itsm-app-itsm-app.apps.ocp.zaskan.es
+itsm_username:
+itsm_password:
 
+# OpenShift API for remediation (create token for demo-remediator SA)
+openshift_api_host: https://api.ocp.zaskan.es:6443
+openshift_api_token:
+openshift_namespace: otel-demo

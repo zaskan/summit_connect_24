@@ -3,25 +3,36 @@
   hosts: localhost
   gather_facts: false
   tasks:
-
-    - name: Open ServiceNow incident
-      servicenow.itsm.incident:
-        state: new
-        caller: "admin"
-        short_description: "{{ title }}"
-        description: "{{ description }}"
-        impact: "low"
-        urgency: "high"
-        other:
-          cause: "{{ date | b64encode }}"
+    - name: Open ITSM incident
+      ansible.builtin.uri:
+        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents"
+        method: POST
+        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+        force_basic_auth: true
+        validate_certs: false
+        status_code: [200, 201]
+        body_format: json
+        body:
+          title: "{{ title }}"
+          description: "{{ description }}"
+          severity: high
       register: incident
 
-    - name: Set ServiceNow incident state
-      servicenow.itsm.incident:
-        state: in_progress
-        number: "{{ incident.record.number }}"
+    - name: Set incident reference fact
+      ansible.builtin.set_fact:
+        incident_ref: "{{ incident.json.public_id }}"
 
-    - name: Set ServiceNow incident number
+    - name: Set stats for workflow
       ansible.builtin.set_stats:
         data:
-          incident: "{{ incident.record.number }}"
+          incident: "{{ incident_ref }}"
+
+    - name: Store ITSM incident reference in credential
+      ansible.controller.credential:
+        name: "ITSM Incidents Credential"
+        organization: "eda_opentelemetry_workshop"
+        state: present
+        credential_type: "ITSM Incidents"
+        inputs:
+          itsm_incident: "{{ incident_ref }}"

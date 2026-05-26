@@ -1,0 +1,56 @@
+---
+- name: Deploy OpenTelemetry demo stack on OpenShift
+  hosts: localhost
+  gather_facts: false
+  vars:
+    openshift_manifest_dir: "{{ playbook_dir }}/../../openshift"
+    nginx_build_dir: "{{ playbook_dir }}/../../openshift/nginx"
+  tasks:
+    - name: Ensure OpenShift project exists
+      ansible.builtin.command:
+        cmd: oc new-project {{ openshift_namespace }} --skip-config-write
+      register: new_project
+      failed_when: new_project.rc != 0 and 'already exists' not in (new_project.stderr | default(''))
+      changed_when: "'Already Exists' not in (new_project.stdout | default(''))"
+
+    - name: Label namespace for user workload monitoring
+      ansible.builtin.command:
+        cmd: oc label namespace {{ openshift_namespace }} openshift.io/user-monitoring=true --overwrite
+      changed_when: true
+
+    - name: Stage nginx static assets for image build
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ nginx_build_dir }}/{{ item | basename }}"
+        mode: "0644"
+      loop:
+        - "{{ playbook_dir }}/../files/nginx/index.html"
+        - "{{ playbook_dir }}/../files/nginx/logo.png"
+        - "{{ playbook_dir }}/../files/nginx/animation.gif"
+
+    - name: Apply OpenShift manifests (kustomize)
+      ansible.builtin.command:
+        cmd: oc apply -k {{ openshift_manifest_dir }}
+      register: apply_stack
+      changed_when: "'configured' in apply_stack.stdout or 'created' in apply_stack.stdout"
+
+    - name: Build demo nginx image from binary context
+      ansible.builtin.command:
+        cmd: oc start-build demo-nginx --from-dir={{ nginx_build_dir }} --wait -n {{ openshift_namespace }}
+      register: nginx_build
+      changed_when: "'successfully' in (nginx_build.stdout | default('')) or nginx_build.rc == 0"
+
+    - name: Wait for kafka deployment
+      ansible.builtin.command:
+        cmd: oc rollout status deployment/kafka -n {{ openshift_namespace }} --timeout=300s
+      changed_when: false
+
+    - name: Wait for otel-collector deployment
+      ansible.builtin.command:
+        cmd: oc rollout status deployment/otel-collector -n {{ openshift_namespace }} --timeout=300s
+      changed_when: false
+
+    - name: Wait for nginx deployment
+      ansible.builtin.command:
+        cmd: oc rollout status deployment/nginx -n {{ openshift_namespace }} --timeout=300s
+      changed_when: false

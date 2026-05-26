@@ -8,13 +8,9 @@
       ansible.builtin.include_vars:
         file: vars/custom.yaml
 
-    - name: Deploy Opentelemetry Stack
-      ansible.builtin.include_tasks: 
-        file: playbooks/opentelemetry.yaml
-
-    - name: Create Servicenow user
-      ansible.builtin.include_tasks: 
-        file: playbooks/servicenow.yaml
+    - name: Deploy OpenTelemetry stack on OpenShift
+      ansible.builtin.include_tasks:
+        file: playbooks/openshift_stack.yaml
 
     - name: Configure Ansible Controller
       ansible.builtin.include_role: 

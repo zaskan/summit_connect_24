@@ -5,10 +5,7 @@ inventory_hosts:
     desc: "localhost"
     inv: "Automation Controller Inventory"
     vars: '{ "ansible_connection": "local", "ansible_python_interpreter": "{% raw %}{{ python_interpreter }}{% endraw %}" }'
-  - name: "nginx"
-    desc: "Nginx Host"
+  - name: "localhost"
+    desc: "localhost for OpenShift remediation"
     inv: "Opentelemetry Inventory"
-    vars: 
-      ansible_host: "{{ opentelemetry_host_ip }}"
-
-
+    vars: '{ "ansible_connection": "local", "ansible_python_interpreter": "{% raw %}{{ python_interpreter }}{% endraw %}" }'

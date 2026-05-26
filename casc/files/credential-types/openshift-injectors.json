@@ -1,0 +1,8 @@
+{
+  "env": {
+    "K8S_AUTH_HOST": "{{ openshift_api_host }}",
+    "K8S_AUTH_API_KEY": "{{ openshift_api_token }}",
+    "K8S_AUTH_VERIFY_SSL": "no",
+    "OPENSHIFT_NAMESPACE": "{{ openshift_namespace }}"
+  }
+}

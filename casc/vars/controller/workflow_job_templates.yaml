@@ -4,21 +4,21 @@ workflowjobtemplates:
     ask_variables_on_launch: true
     allow_simultaneous: false
     steps:
-      - identifier: "Open Servicenow Ticket"
+      - identifier: "Open ITSM Ticket"
         unified_job_template:
-          organization: 
+          organization:
             name: "eda_opentelemetry_workshop"
-          name: "[JT] Open Servicenow Ticket"
+          name: "[JT] Open ITSM Ticket"
           type: job_template
         related:
           success_nodes:
-            - identifier: "Check Servicenow Ticket"
-      - identifier: "Check Servicenow Ticket"
+            - identifier: "Check ITSM Ticket"
+      - identifier: "Check ITSM Ticket"
         unified_job_template:
-          organization: 
+          organization:
             name: "eda_opentelemetry_workshop"
-          description: "Check Servicenow Ticket"
-          name: "Check Servicenow Ticket"
+          description: "Check ITSM Ticket"
+          name: "Check ITSM Ticket"
           type: workflow_approval
         related:
           success_nodes:
@@ -43,10 +43,10 @@ workflowjobtemplates:
           type: workflow_approval
         related:
           success_nodes:
-            - identifier: "Close Servicenow Ticket"
-      - identifier: "Close Servicenow Ticket"
+            - identifier: "Close ITSM Ticket"
+      - identifier: "Close ITSM Ticket"
         unified_job_template:
           organization:
             name: "eda_opentelemetry_workshop"
-          name: "[JT] Close Servicenow Ticket"
+          name: "[JT] Close ITSM Ticket"
           type: job_template

@@ -1,0 +1,12 @@
+{
+  "fields": [
+    {
+      "id": "itsm_incident",
+      "type": "string",
+      "label": "ITSM incident reference"
+    }
+  ],
+  "required": [
+    "itsm_incident"
+  ]
+}

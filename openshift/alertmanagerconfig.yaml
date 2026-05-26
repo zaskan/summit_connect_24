@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: otel-webhook
+  namespace: otel-demo
+  labels:
+    alertmanagerConfig: user-workload
+spec:
+  route:
+    receiver: otel
+    matchers:
+      - name: alertname
+        matchType: "="
+        value: NginxDown
+  receivers:
+    - name: otel
+      webhookConfigs:
+        - url: http://otel-collector.otel-demo.svc:1979/events
+          sendResolved: true

@@ -24,7 +24,7 @@ exporters:
     loglevel: debug
   kafka:
     brokers:
-      - kafka.otel-demo.svc:9092
+      - kafka.otel-demo.svc.cluster.local:9092
     topic: otel-events
     protocol_version: 2.0.0
     encoding: "otlp_json"

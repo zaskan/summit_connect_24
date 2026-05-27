@@ -2,7 +2,7 @@
   hosts: localhost
   sources:
     - ansible.eda.kafka:
-        host: kafka.otel-demo.svc
+        host: kafka.otel-demo.svc.cluster.local
         port: 9092
         topic: otel-events
 

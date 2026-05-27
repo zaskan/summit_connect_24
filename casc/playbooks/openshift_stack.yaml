@@ -45,6 +45,19 @@
         cmd: oc rollout status deployment/kafka -n {{ openshift_namespace }} --timeout=300s
       changed_when: false
 
+    - name: Ensure otel-events Kafka topic exists
+      ansible.builtin.command:
+        cmd: >-
+          oc exec -n {{ openshift_namespace }} deploy/kafka --
+          /opt/kafka/bin/kafka-topics.sh
+          --bootstrap-server kafka.otel-demo.svc.cluster.local:9092
+          --create --if-not-exists
+          --topic otel-events
+          --partitions 1
+          --replication-factor 1
+      register: kafka_topic
+      changed_when: "'Created topic' in (kafka_topic.stdout | default(''))"
+
     - name: Wait for otel-collector deployment
       ansible.builtin.command:
         cmd: oc rollout status deployment/otel-collector -n {{ openshift_namespace }} --timeout=300s

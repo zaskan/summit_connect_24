@@ -2,12 +2,16 @@
 - name: Reset Demo — disable EDA activation
   hosts: localhost
   gather_facts: false
+  vars:
+    aap_gateway: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') | default(lookup('ansible.builtin.env', 'EDA_HOST'), true) }}"
+    aap_user: "{{ lookup('ansible.builtin.env', 'AAP_USERNAME') | default(lookup('ansible.builtin.env', 'EDA_USERNAME'), true) }}"
+    aap_pass: "{{ lookup('ansible.builtin.env', 'AAP_PASSWORD') | default(lookup('ansible.builtin.env', 'EDA_PASSWORD'), true) }}"
   tasks:
     - name: Delete Rulebook Activation
       ansible.eda.rulebook_activation:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
+        controller_host: "{{ aap_gateway }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
         validate_certs: false
         name: "Kafka Rulebook Activation"
         state: absent
@@ -18,12 +22,17 @@
 - name: Reset Demo — EDA, ITSM, credentials
   hosts: localhost
   gather_facts: false
+  vars:
+    aap_gateway: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') | default(lookup('ansible.builtin.env', 'EDA_HOST'), true) }}"
+    aap_user: "{{ lookup('ansible.builtin.env', 'AAP_USERNAME') | default(lookup('ansible.builtin.env', 'EDA_USERNAME'), true) }}"
+    aap_pass: "{{ lookup('ansible.builtin.env', 'AAP_PASSWORD') | default(lookup('ansible.builtin.env', 'EDA_PASSWORD'), true) }}"
+    controller_gateway: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(aap_gateway, true) }}"
   tasks:
     - name: Wait for rulebook activation to be deleted
       ansible.eda.rulebook_activation_info:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
+        controller_host: "{{ aap_gateway }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
         name: "Kafka Rulebook Activation"
         validate_certs: false
       register: activation_status
@@ -33,24 +42,23 @@
 
     - name: Create Rulebook Activation
       ansible.eda.rulebook_activation:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
+        controller_host: "{{ aap_gateway }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
         validate_certs: false
         name: "Kafka Rulebook Activation"
         description: "Kafka Rulebook Activation"
         project_name: "OpenTelemetry EDA Project"
         rulebook_name: kafka.yaml
         decision_environment_name: EDA Decision Environment
-        enabled: true
         awx_token_name: "Ansible Controller"
-        state: present
+        state: enabled
 
     - name: Wait for rulebook activation to be running
       ansible.eda.rulebook_activation_info:
-        controller_host: "{{ lookup('ansible.builtin.env', 'EDA_HOST') }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'EDA_USERNAME') }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'EDA_PASSWORD') }}"
+        controller_host: "{{ aap_gateway }}"
+        controller_username: "{{ aap_user }}"
+        controller_password: "{{ aap_pass }}"
         name: "Kafka Rulebook Activation"
         validate_certs: false
       register: activation_status
@@ -103,6 +111,10 @@
 
     - name: Reset ITSM Incidents credential
       ansible.controller.credential:
+        controller_host: "{{ controller_gateway }}"
+        controller_username: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(aap_user, true) }}"
+        controller_password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(aap_pass, true) }}"
+        validate_certs: false
         name: "ITSM Incidents Credential"
         organization: "eda_opentelemetry_workshop"
         state: present
@@ -112,9 +124,9 @@
 
     - name: Delete project update jobs
       ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}/api/v2/system_job_templates/1/launch/"
-        user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
+        url: "{{ controller_gateway.rstrip('/') }}/api/controller/v2/system_job_templates/1/launch/"
+        user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(aap_user, true) }}"
+        password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(aap_pass, true) }}"
         method: POST
         validate_certs: false
         force_basic_auth: true

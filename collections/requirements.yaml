@@ -1,4 +1,7 @@
 collections:
-  - name: kubernetes.core
-  - name: infra.eda_configuration
+  - name: ansible.platform
+    version: ">=2.7.0"
+  - name: ansible.controller
+    version: ">=4.6.0"
   - name: ansible.eda
+  - name: kubernetes.core

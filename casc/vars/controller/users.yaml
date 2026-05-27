@@ -17,7 +17,7 @@ users:
         role: use
       - inventory: "Opentelemetry Inventory"
         role: adhoc
-      - inventory: "Automation Controller Inventory"
+      - inventory: "EDA Workshop Inventory"
         role: use
       - project: "Ansible EDA OpenTelemetry"
         role: use

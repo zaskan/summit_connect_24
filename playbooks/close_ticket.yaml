@@ -2,6 +2,10 @@
 - name: Close Ticket
   hosts: localhost
   gather_facts: false
+  vars:
+    controller_gateway: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true) }}"
+    controller_user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(lookup('ansible.builtin.env', 'AAP_USERNAME'), true) }}"
+    controller_pass: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(lookup('ansible.builtin.env', 'AAP_PASSWORD'), true) }}"
   tasks:
     - name: Close ITSM incident
       ansible.builtin.uri:
@@ -19,6 +23,10 @@
 
     - name: Reset ITSM Incidents credential
       ansible.controller.credential:
+        controller_host: "{{ controller_gateway }}"
+        controller_username: "{{ controller_user }}"
+        controller_password: "{{ controller_pass }}"
+        validate_certs: false
         name: "ITSM Incidents Credential"
         organization: "eda_opentelemetry_workshop"
         state: present
@@ -29,5 +37,9 @@
 
     - name: Launch clean demo job template
       ansible.controller.job_launch:
+        controller_host: "{{ controller_gateway }}"
+        controller_username: "{{ controller_user }}"
+        controller_password: "{{ controller_pass }}"
+        validate_certs: false
         job_template: "[JT] Clean Demo Environment"
       when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') != 'none'

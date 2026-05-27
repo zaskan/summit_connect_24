@@ -1,6 +1,7 @@
 collections:
-  - name: https://github.com/zaskan/ansible_automation_platform.casc.git
-    type: git
-  - name: kubernetes.core
+  - name: ansible.platform
+    version: ">=2.7.0"
   - name: ansible.controller
-  - name: infra.eda_configuration
+    version: ">=4.6.0"
+  - name: ansible.eda
+  - name: kubernetes.core

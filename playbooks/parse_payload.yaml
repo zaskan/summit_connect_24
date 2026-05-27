@@ -1,9 +1,12 @@
 ---
-- name: Open Ticket
+- name: Parse Kafka payload and launch workflows
   hosts: localhost
   gather_facts: false
+  vars:
+    controller_gateway: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true) }}"
+    controller_user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(lookup('ansible.builtin.env', 'AAP_USERNAME'), true) }}"
+    controller_pass: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(lookup('ansible.builtin.env', 'AAP_PASSWORD'), true) }}"
   tasks:
-
     - name: Parse payload
       ansible.builtin.set_fact:
         parsed_payload: "{{ kafka_message.body.resourceLogs[0].scopeLogs[0].logRecords[0].body.stringValue | from_json }}"
@@ -17,6 +20,10 @@
 
     - name: Trigger Remediation Workflow
       ansible.controller.workflow_launch:
+        controller_host: "{{ controller_gateway }}"
+        controller_username: "{{ controller_user }}"
+        controller_password: "{{ controller_pass }}"
+        validate_certs: false
         workflow_template: "[WF] Remediation Pipeline"
         extra_vars:
           status: "{{ status }}"
@@ -25,8 +32,12 @@
           date: "{{ date }}"
       when: status == "firing"
 
-    - name: Trigger Acceptance Job Template
+    - name: Trigger Acceptance Workflow
       ansible.controller.workflow_launch:
+        controller_host: "{{ controller_gateway }}"
+        controller_username: "{{ controller_user }}"
+        controller_password: "{{ controller_pass }}"
+        validate_certs: false
         workflow_template: "[WF] Acceptance Pipeline"
         extra_vars:
           status: "{{ status }}"
@@ -34,4 +45,3 @@
           title: "{{ title }}"
           date: "{{ date }}"
       when: status == "resolved"
-

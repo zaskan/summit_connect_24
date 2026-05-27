@@ -8,20 +8,8 @@
       ansible.builtin.include_vars:
         file: vars/custom.yaml
 
-    - name: Deploy OpenTelemetry stack on OpenShift
-      ansible.builtin.include_tasks:
-        file: playbooks/openshift_stack.yaml
+- name: Deploy OpenTelemetry stack on OpenShift
+  ansible.builtin.import_playbook: playbooks/openshift_stack.yaml
 
-    - name: Configure Ansible Controller
-      ansible.builtin.include_role: 
-        name: ansible_automation_platform.casc.controller
-      vars: 
-        installation_type: vm
-        controller_vars_dir: vars/controller/*
-
-    - name: Configure Ansible Eda
-      ansible.builtin.include_role: 
-        name: ansible_automation_platform.casc.eda
-      vars:
-        installation_type: vm
-        eda_vars_dir: vars/eda/*
+- name: Configure Ansible Automation Platform 2.6
+  ansible.builtin.import_playbook: playbooks/configure_aap.yaml

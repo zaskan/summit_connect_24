@@ -1,11 +1,8 @@
-# Ansible Automation Platform (OpenShift)
-controller_host: https://ansible-controller-aap.apps.ocp.zaskan.es
-controller_username: admin
-controller_password:
-
-eda_host: https://ansible-eda-aap.apps.ocp.zaskan.es
-eda_username: admin
-eda_password:
+# Ansible Automation Platform 2.6 — Automation Gateway
+aap_hostname: https://ansible-aap.apps.ocp.zaskan.es
+aap_username: admin
+aap_password:
+aap_validate_certs: false
 
 # Git project (branch openshift must exist on remote)
 telemetry_project_url: https://github.com/zaskan/summit_connect_24.git

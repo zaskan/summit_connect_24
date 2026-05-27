@@ -2,6 +2,12 @@
   "env": {
     "EDA_HOST": "{{ eda_host }}",
     "EDA_USERNAME": "{{ eda_user }}",
-    "EDA_PASSWORD": "{{ eda_pass }}"
+    "EDA_PASSWORD": "{{ eda_pass }}",
+    "AAP_HOSTNAME": "{{ eda_host }}",
+    "AAP_USERNAME": "{{ eda_user }}",
+    "AAP_PASSWORD": "{{ eda_pass }}",
+    "CONTROLLER_HOST": "{{ eda_host }}",
+    "CONTROLLER_USERNAME": "{{ eda_user }}",
+    "CONTROLLER_PASSWORD": "{{ eda_pass }}"
   }
 }

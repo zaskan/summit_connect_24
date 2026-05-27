@@ -1,7 +1,7 @@
 jobtemplates:
   - name: "[JT] Open ITSM Ticket"
     org: "eda_opentelemetry_workshop"
-    inv: "Automation Controller Inventory"
+    inv: "EDA Workshop Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/open_ticket.yaml"
     creds:
@@ -15,11 +15,11 @@ jobtemplates:
 
   - name: "[JT] Close ITSM Ticket"
     org: "eda_opentelemetry_workshop"
-    inv: "Automation Controller Inventory"
+    inv: "EDA Workshop Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/close_ticket.yaml"
     creds:
-      - "Red Hat Ansible Automation Platform Credential"
+      - "EDA Workshop AAP Credential"
       - "ITSM Credential"
       - "ITSM Incidents Credential"
       - "OpenShift Demo Credential"
@@ -31,11 +31,11 @@ jobtemplates:
 
   - name: "[JT] Parse Kafka Payload"
     org: "eda_opentelemetry_workshop"
-    inv: "Automation Controller Inventory"
+    inv: "EDA Workshop Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/parse_payload.yaml"
     creds:
-      - "Red Hat Ansible Automation Platform Credential"
+      - "EDA Workshop AAP Credential"
     use_fact_cache: false
     ask_limit_on_launch: false
     ask_variables_on_launch: true
@@ -44,7 +44,7 @@ jobtemplates:
 
   - name: "[JT] Remediate Nginx"
     org: "eda_opentelemetry_workshop"
-    inv: "Automation Controller Inventory"
+    inv: "EDA Workshop Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/remediate.yaml"
     creds:
@@ -57,12 +57,12 @@ jobtemplates:
 
   - name: "[JT] Clean Demo Environment"
     org: "eda_opentelemetry_workshop"
-    inv: "Automation Controller Inventory"
+    inv: "EDA Workshop Inventory"
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/reset.yaml"
     creds:
-      - "Red Hat Ansible Automation Platform Credential"
-      - "Red Hat Event-Driven Ansible Credential"
+      - "EDA Workshop AAP Credential"
+      - "EDA Workshop EDA Credential"
       - "ITSM Credential"
       - "ITSM Incidents Credential"
       - "OpenShift Demo Credential"

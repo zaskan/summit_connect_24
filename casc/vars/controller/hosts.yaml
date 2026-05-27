@@ -3,7 +3,7 @@ python_interpreter: "{% raw %}{{ ansible_playbook_python }}{% endraw %}"
 inventory_hosts:
   - name: "localhost"
     desc: "localhost"
-    inv: "Automation Controller Inventory"
+    inv: "EDA Workshop Inventory"
     vars: '{ "ansible_connection": "local", "ansible_python_interpreter": "{% raw %}{{ python_interpreter }}{% endraw %}" }'
   - name: "localhost"
     desc: "localhost for OpenShift remediation"

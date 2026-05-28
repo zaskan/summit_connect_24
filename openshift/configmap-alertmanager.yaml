@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: otel-demo
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: otel
+      group_by: [alertname]
+      group_wait: 5s
+      group_interval: 10s
+      repeat_interval: 1h
+      routes:
+        - match:
+            alertname: NginxDown
+          receiver: otel
+    receivers:
+      - name: otel
+        webhook_configs:
+          - url: http://otel-collector.otel-demo.svc:1979/events
+            send_resolved: true

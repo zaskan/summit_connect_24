@@ -1,0 +1,27 @@
+---
+# Normalize Controller/AAP host from credential injectors (must include scheme for controller modules).
+controller_host_raw: >-
+  {{
+    lookup('ansible.builtin.env', 'CONTROLLER_HOST')
+    | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true)
+    | default(lookup('ansible.builtin.env', 'EDA_HOST'), true)
+    | trim
+  }}
+controller_gateway: >-
+  {{
+    controller_host_raw
+    if (controller_host_raw | regex_search('^https?://'))
+    else ('https://' ~ controller_host_raw)
+  }}
+controller_user: >-
+  {{
+    lookup('ansible.builtin.env', 'CONTROLLER_USERNAME')
+    | default(lookup('ansible.builtin.env', 'AAP_USERNAME'), true)
+    | default(lookup('ansible.builtin.env', 'EDA_USERNAME'), true)
+  }}
+controller_pass: >-
+  {{
+    lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD')
+    | default(lookup('ansible.builtin.env', 'AAP_PASSWORD'), true)
+    | default(lookup('ansible.builtin.env', 'EDA_PASSWORD'), true)
+  }}

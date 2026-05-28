@@ -2,14 +2,16 @@
 - name: Close Ticket
   hosts: localhost
   gather_facts: false
-  vars_files:
-    - vars/controller_connection.yml
   vars:
     itsm_host: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') | regex_replace('/+$', '') }}"
     itsm_user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
     itsm_pass: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
     tracked_incident_ref: "{{ lookup('ansible.builtin.env', 'ITSM_INCIDENT') }}"
   tasks:
+    - name: Load controller connection vars
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/vars/controller_connection.yml"
+
     - name: Validate required ITSM and Controller credentials
       ansible.builtin.assert:
         that:

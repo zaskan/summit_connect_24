@@ -1,0 +1,39 @@
+---
+- name: Load EDA variable files
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  loop:
+    - "{{ playbook_dir }}/../vars/eda/eda_projects.yaml"
+    - "{{ playbook_dir }}/../vars/eda/decision_environments.yaml"
+    - "{{ playbook_dir }}/../vars/eda/activations.yaml"
+
+- name: Ensure EDA projects exist
+  ansible.eda.project:
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(omit) }}"
+    organization_name: "{{ aap_org_name }}"
+    url: "{{ item.url }}"
+    scm_branch: openshift
+    state: present
+  loop: "{{ eda_projects }}"
+
+- name: Ensure decision environments exist
+  ansible.eda.decision_environment:
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(omit) }}"
+    organization_name: "{{ aap_org_name }}"
+    image_url: "{{ item.image_url }}"
+    state: present
+  loop: "{{ decision_environments }}"
+
+- name: Ensure rulebook activations exist
+  ansible.eda.rulebook_activation:
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(omit) }}"
+    organization_name: "{{ aap_org_name }}"
+    project_name: "{{ item.project }}"
+    rulebook_name: "{{ item.rulebook }}"
+    decision_environment_name: "{{ item.decision_environment }}"
+    awx_token_name: "{{ item.awx_token }}"
+    state: "{{ 'enabled' if item.enabled | default(true) else 'disabled' }}"
+  loop: "{{ activations }}"

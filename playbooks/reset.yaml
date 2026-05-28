@@ -22,17 +22,22 @@
 - name: Reset Demo — EDA, ITSM, credentials
   hosts: localhost
   gather_facts: false
-  vars_files:
-    - vars/controller_connection.yml
   vars:
-    aap_gateway: "{{ controller_gateway }}"
-    aap_user: "{{ controller_user }}"
-    aap_pass: "{{ controller_pass }}"
     itsm_host: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') | regex_replace('/+$', '') }}"
     itsm_user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
     itsm_pass: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
     tracked_incident_ref: "{{ lookup('ansible.builtin.env', 'ITSM_INCIDENT') }}"
   tasks:
+    - name: Load controller connection vars
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/vars/controller_connection.yml"
+
+    - name: Set AAP aliases from controller connection vars
+      ansible.builtin.set_fact:
+        aap_gateway: "{{ controller_gateway }}"
+        aap_user: "{{ controller_user }}"
+        aap_pass: "{{ controller_pass }}"
+
     - name: Wait for rulebook activation to be deleted
       ansible.eda.rulebook_activation_info:
         controller_host: "{{ aap_gateway }}"

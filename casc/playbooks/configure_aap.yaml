@@ -1,0 +1,96 @@
+---
+- name: Configure Ansible Automation Platform 2.6 via Gateway
+  hosts: localhost
+  gather_facts: false
+  module_defaults:
+    ansible.platform.organization:
+      aap_hostname: "{{ aap_hostname }}"
+      aap_username: "{{ aap_username }}"
+      aap_password: "{{ aap_password }}"
+      aap_validate_certs: "{{ aap_validate_certs }}"
+    ansible.platform.application:
+      aap_hostname: "{{ aap_hostname }}"
+      aap_username: "{{ aap_username }}"
+      aap_password: "{{ aap_password }}"
+      aap_validate_certs: "{{ aap_validate_certs }}"
+    ansible.platform.user:
+      aap_hostname: "{{ aap_hostname }}"
+      aap_username: "{{ aap_username }}"
+      aap_password: "{{ aap_password }}"
+      aap_validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.credential_type:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.credential:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.project:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.inventory:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.host:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.job_template:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.workflow_job_template:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.token:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.controller.role:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.eda.project:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.eda.decision_environment:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+    ansible.eda.rulebook_activation:
+      controller_host: "{{ aap_hostname }}"
+      controller_username: "{{ aap_username }}"
+      controller_password: "{{ aap_password }}"
+      validate_certs: "{{ aap_validate_certs }}"
+  tasks:
+    - name: Include AAP defaults
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../vars/aap_defaults.yml"
+
+    - name: Configure gateway resources
+      ansible.builtin.include_tasks: gateway.yml
+
+    - name: Configure Controller resources
+      ansible.builtin.include_tasks: controller_resources.yml
+
+    - name: Configure EDA resources
+      ansible.builtin.include_tasks: eda_resources.yml
+
+    - name: Configure users and RBAC
+      ansible.builtin.include_tasks: rbac.yml

@@ -1,0 +1,127 @@
+---
+- name: Load Controller variable files
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  loop:
+    - "{{ playbook_dir }}/../vars/controller/credential_types.yaml"
+    - "{{ playbook_dir }}/../vars/controller/controller_credentials.yaml"
+    - "{{ playbook_dir }}/../vars/controller/controller_projects.yaml"
+    - "{{ playbook_dir }}/../vars/controller/inventories.yaml"
+    - "{{ playbook_dir }}/../vars/controller/hosts.yaml"
+    - "{{ playbook_dir }}/../vars/controller/job_templates.yaml"
+    - "{{ playbook_dir }}/../vars/controller/workflow_job_templates.yaml"
+    - "{{ playbook_dir }}/../vars/controller/controller_tokens.yaml"
+
+- name: Ensure custom credential types exist
+  ansible.controller.credential_type:
+    name: "{{ item.name }}"
+    kind: "{{ item.kind }}"
+    inputs: "{{ item.inputs }}"
+    injectors: "{{ item.injectors }}"
+    state: present
+  loop: "{{ custom_credential_types }}"
+
+- name: Ensure Controller credentials exist
+  ansible.controller.credential:
+    name: "{{ item.name }}"
+    organization: "{{ item.org }}"
+    credential_type: "{{ item.type }}"
+    inputs: "{{ item.inputs }}"
+    state: present
+  loop: "{{ controller_credentials }}"
+
+- name: Remove legacy duplicate workshop AAP credential from prior deploy
+  ansible.controller.credential:
+    name: "Red Hat Ansible Automation Platform Credential"
+    organization: "{{ aap_org_name }}"
+    credential_type: "Red Hat Ansible Automation Platform"
+    state: absent
+  register: remove_legacy_workshop_aap_credential
+  failed_when: >-
+    remove_legacy_workshop_aap_credential is failed and
+    'returned 0 items' not in (remove_legacy_workshop_aap_credential.msg | default(''))
+
+- name: Remove legacy duplicate workshop EDA credential from prior deploy
+  ansible.controller.credential:
+    name: "Red Hat Event-Driven Ansible Credential"
+    organization: "{{ aap_org_name }}"
+    credential_type: "Red Hat Event-Driven Ansible"
+    state: absent
+  register: remove_legacy_workshop_eda_credential
+  failed_when: >-
+    remove_legacy_workshop_eda_credential is failed and
+    'returned 0 items' not in (remove_legacy_workshop_eda_credential.msg | default(''))
+
+- name: Ensure Controller projects exist
+  ansible.controller.project:
+    name: "{{ item.name }}"
+    description: "{{ item.desc | default(omit) }}"
+    organization: "{{ item.org }}"
+    scm_type: git
+    scm_url: "{{ item.git_url }}"
+    scm_branch: "{{ item.git_branch }}"
+    scm_update_on_launch: "{{ item.update_on_launch | default(false) }}"
+    state: present
+  loop: "{{ controller_projects }}"
+
+- name: Ensure Controller inventories exist
+  ansible.controller.inventory:
+    name: "{{ item.name }}"
+    description: "{{ item.desc | default(omit) }}"
+    organization: "{{ item.org }}"
+    state: present
+  loop: "{{ inventories }}"
+
+- name: Remove legacy duplicate workshop inventory from prior deploy
+  ansible.controller.inventory:
+    name: "Automation Controller Inventory"
+    organization: "{{ aap_org_name }}"
+    state: absent
+  register: remove_legacy_workshop_inventory
+  failed_when: >-
+    remove_legacy_workshop_inventory is failed and
+    'returned 0 items' not in (remove_legacy_workshop_inventory.msg | default(''))
+
+- name: Ensure inventory hosts exist
+  ansible.controller.host:
+    name: "{{ item.name }}"
+    inventory: "{{ item.inv }}"
+    variables: "{{ item.vars }}"
+    state: present
+  loop: "{{ inventory_hosts }}"
+
+- name: Ensure job templates exist
+  ansible.controller.job_template:
+    name: "{{ item.name }}"
+    organization: "{{ item.org }}"
+    inventory: "{{ item.inv }}"
+    project: "{{ item.project }}"
+    playbook: "{{ item.playbook }}"
+    credentials: "{{ item.creds }}"
+    ask_variables_on_launch: "{{ item.ask_variables_on_launch | default(false) }}"
+    ask_limit_on_launch: "{{ item.ask_limit_on_launch | default(false) }}"
+    allow_simultaneous: "{{ item.allow_simultaneous | default(false) }}"
+    execution_environment: "{{ item.execution_environment | default(omit) }}"
+    state: present
+  loop: "{{ jobtemplates }}"
+
+- name: Ensure workflow job templates exist
+  ansible.controller.workflow_job_template:
+    name: "{{ item.name }}"
+    organization: "{{ item.org }}"
+    ask_variables_on_launch: "{{ item.ask_variables_on_launch | default(false) }}"
+    allow_simultaneous: "{{ item.allow_simultaneous | default(false) }}"
+    workflow_nodes: "{{ item.steps }}"
+    destroy_current_schema: true
+    state: present
+  loop: "{{ workflowjobtemplates }}"
+
+- name: Ensure Controller OAuth tokens for EDA exist
+  ansible.controller.token:
+    description: "{{ item.description }}"
+    application: "{{ item.application }}"
+    scope: "{{ item.scope }}"
+    state: present
+  loop: "{{ controller_tokens }}"
+  register: eda_tokens
+  no_log: true

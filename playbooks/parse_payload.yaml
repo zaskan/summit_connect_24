@@ -2,9 +2,11 @@
 - name: Parse Kafka payload and launch workflows
   hosts: localhost
   gather_facts: false
-  vars_files:
-    - vars/controller_connection.yml
   tasks:
+    - name: Load controller connection vars
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/vars/controller_connection.yml"
+
     - name: Parse payload
       ansible.builtin.set_fact:
         parsed_payload: "{{ kafka_message.body.resourceLogs[0].scopeLogs[0].logRecords[0].body.stringValue | from_json }}"

@@ -1,0 +1,24 @@
+---
+- name: Load gateway variable files
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  loop:
+    - "{{ playbook_dir }}/../vars/controller/organizations.yaml"
+    - "{{ playbook_dir }}/../vars/controller/applications.yaml"
+
+- name: Ensure gateway organizations exist
+  ansible.platform.organization:
+    name: "{{ item.name }}"
+    description: "{{ item.desc | default(omit) }}"
+    state: present
+  loop: "{{ organizations }}"
+
+- name: Ensure gateway OAuth applications exist
+  ansible.platform.application:
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(omit) }}"
+    organization: "{{ item.organization }}"
+    authorization_grant_type: "{{ item.auth_grant_type | default('password') }}"
+    client_type: "{{ item.client_type | default('public') }}"
+    state: present
+  loop: "{{ applications }}"

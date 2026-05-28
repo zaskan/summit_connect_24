@@ -1,0 +1,36 @@
+---
+- name: Load user definitions
+  ansible.builtin.include_vars:
+    file: "{{ playbook_dir }}/../vars/controller/users.yaml"
+
+- name: Ensure gateway users exist
+  ansible.platform.user:
+    username: "{{ item.username }}"
+    email: "{{ item.email | default(omit) }}"
+    password: "{{ item.password }}"
+    state: present
+  loop: "{{ users }}"
+  no_log: true
+
+- name: Assign Controller RBAC roles to users
+  ansible.controller.role:
+    user: "{{ item.0.username }}"
+    role: "{{ item.1.role }}"
+    organization: "{{ item.1.organization | default(omit) }}"
+    lookup_organization: >-
+      {{
+        aap_org_name if (
+          item.1.credential is defined or
+          item.1.inventory is defined or
+          item.1.project is defined or
+          item.1.job_template is defined or
+          item.1.workflow is defined
+        ) else omit
+      }}
+    credential: "{{ item.1.credential | default(omit) }}"
+    inventory: "{{ item.1.inventory | default(omit) }}"
+    project: "{{ item.1.project | default(omit) }}"
+    job_template: "{{ item.1.job_template | default(omit) }}"
+    workflow: "{{ item.1.workflow | default(omit) }}"
+    state: present
+  loop: "{{ users | subelements('roles') }}"

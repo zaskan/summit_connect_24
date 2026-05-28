@@ -2,10 +2,8 @@
 - name: Parse Kafka payload and launch workflows
   hosts: localhost
   gather_facts: false
-  vars:
-    controller_gateway: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true) }}"
-    controller_user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(lookup('ansible.builtin.env', 'AAP_USERNAME'), true) }}"
-    controller_pass: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(lookup('ansible.builtin.env', 'AAP_PASSWORD'), true) }}"
+  vars_files:
+    - vars/controller_connection.yml
   tasks:
     - name: Parse payload
       ansible.builtin.set_fact:

@@ -5,6 +5,7 @@ jobtemplates:
     project: "Ansible EDA OpenTelemetry"
     playbook: "playbooks/open_ticket.yaml"
     creds:
+      - "EDA Workshop AAP Credential"
       - "ITSM Credential"
       - "ITSM Incidents Credential"
     use_fact_cache: false

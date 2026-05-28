@@ -27,12 +27,9 @@ data:
             replacement: blackbox:9115
     alerting:
       alertmanagers:
-        - scheme: https
-          tls_config:
-            insecure_skip_verify: true
-          static_configs:
+        - static_configs:
             - targets:
-                - alertmanager-main.openshift-monitoring.svc:9094
+                - alertmanager:9093
     rule_files:
       - /etc/prometheus/alert.rules.yml
   alert.rules.yml: |

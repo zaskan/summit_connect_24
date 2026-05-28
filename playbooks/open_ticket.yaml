@@ -2,35 +2,60 @@
 - name: Open Ticket
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars/controller_connection.yml
   vars:
-    controller_gateway: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(lookup('ansible.builtin.env', 'AAP_HOSTNAME'), true) }}"
-    controller_user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(lookup('ansible.builtin.env', 'AAP_USERNAME'), true) }}"
-    controller_pass: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(lookup('ansible.builtin.env', 'AAP_PASSWORD'), true) }}"
+    itsm_host: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') | regex_replace('/+$', '') }}"
+    itsm_user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+    itsm_pass: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+    incident_key: "{{ ('eda_' ~ (title | string) ~ '_' ~ (date | default('') | string)) | hash('sha1') }}"
   tasks:
-    - name: Open ITSM incident
-      ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents"
-        method: POST
-        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
-        force_basic_auth: true
-        validate_certs: false
-        status_code: [200, 201]
-        body_format: json
-        body:
-          title: "{{ title }}"
-          description: "{{ description }}"
-          severity: high
-      register: incident
+    - name: Validate required ITSM and Controller credentials
+      ansible.builtin.assert:
+        that:
+          - itsm_host | length > 0
+          - itsm_user | length > 0
+          - itsm_pass | length > 0
+          - controller_gateway | length > 0
+          - controller_user | length > 0
+          - controller_pass | length > 0
+        fail_msg: >-
+          Missing required ITSM or Controller credentials. Attach EDA Workshop AAP Credential
+          (or equivalent) plus ITSM credentials to this job template so CONTROLLER_HOST,
+          CONTROLLER_USERNAME, and CONTROLLER_PASSWORD are injected.
+
+    - name: Open ITSM incident via role
+      ansible.builtin.include_role:
+        name: itsm_ansible_role
+      vars:
+        itsm_api_base_url: "{{ itsm_host }}"
+        itsm_api_user: "{{ itsm_user }}"
+        itsm_api_password: "{{ itsm_pass }}"
+        itsm_validate_certs: false
+        itsm_ansible_role_check_connection: true
+        itsm_ansible_role_admin_settings: false
+        itsm_ansible_role_users: false
+        itsm_ansible_role_asset_types: false
+        itsm_ansible_role_inventory: false
+        itsm_ansible_role_kb: false
+        itsm_ansible_role_incidents: true
+        itsm_ansible_role_followups: false
+        itsm_incidents:
+          - incident_key: "{{ incident_key }}"
+            title: "{{ title }}"
+            description: "{{ description }}"
+            severity: high
+            created_at: "{{ date | default(omit) }}"
 
     - name: Set incident reference fact
       ansible.builtin.set_fact:
-        incident_ref: "{{ incident.json.public_id }}"
+        incident_ref: "{{ itsm_incident_by_key[incident_key] }}"
 
     - name: Set stats for workflow
       ansible.builtin.set_stats:
         data:
           incident: "{{ incident_ref }}"
+          incident_key: "{{ incident_key }}"
 
     - name: Store ITSM incident reference in credential
       ansible.controller.credential:

@@ -18,11 +18,8 @@ scrape_configs:
         replacement: blackbox:9115  # The blackbox exporter's real hostname:port.
 alerting:
   alertmanagers:
-  - scheme: https
-    tls_config:
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['alertmanager-main.openshift-monitoring.svc:9094']
+  - static_configs:
+    - targets: ['alertmanager:9093']
 
 rule_files:
   - '/etc/prometheus/alert.rules.yml'

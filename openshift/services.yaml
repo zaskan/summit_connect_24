@@ -54,6 +54,20 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: alertmanager
+  namespace: otel-demo
+spec:
+  selector:
+    app: alertmanager
+  ports:
+    - name: http
+      port: 9093
+      targetPort: 9093
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: nginx
   namespace: otel-demo
 spec:

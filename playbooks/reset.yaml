@@ -22,11 +22,16 @@
 - name: Reset Demo — EDA, ITSM, credentials
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars/controller_connection.yml
   vars:
-    aap_gateway: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') | default(lookup('ansible.builtin.env', 'EDA_HOST'), true) }}"
-    aap_user: "{{ lookup('ansible.builtin.env', 'AAP_USERNAME') | default(lookup('ansible.builtin.env', 'EDA_USERNAME'), true) }}"
-    aap_pass: "{{ lookup('ansible.builtin.env', 'AAP_PASSWORD') | default(lookup('ansible.builtin.env', 'EDA_PASSWORD'), true) }}"
-    controller_gateway: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') | default(aap_gateway, true) }}"
+    aap_gateway: "{{ controller_gateway }}"
+    aap_user: "{{ controller_user }}"
+    aap_pass: "{{ controller_pass }}"
+    itsm_host: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') | regex_replace('/+$', '') }}"
+    itsm_user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
+    itsm_pass: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
+    tracked_incident_ref: "{{ lookup('ansible.builtin.env', 'ITSM_INCIDENT') }}"
   tasks:
     - name: Wait for rulebook activation to be deleted
       ansible.eda.rulebook_activation_info:
@@ -66,54 +71,54 @@
       retries: 30
       delay: 10
 
-    - name: List open ITSM incidents
-      ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents?status=open"
-        method: GET
-        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
-        force_basic_auth: true
-        validate_certs: false
-        status_code: 200
-      register: open_incidents
-      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') == 'none'
+    - name: Validate required Controller credentials
+      ansible.builtin.assert:
+        that:
+          - controller_gateway | length > 0
+          - controller_user | length > 0
+          - controller_pass | length > 0
+        fail_msg: >-
+          Missing required controller credentials. Ensure controller/AAP host+credentials
+          are injected into this job.
 
-    - name: Close open ITSM incidents
-      ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents/{{ item.public_id }}/close"
-        method: POST
-        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
-        force_basic_auth: true
-        validate_certs: false
-        status_code: [200, 201]
-        body_format: json
-        body:
-          comment: "Closed by demo reset automation"
-      loop: "{{ open_incidents.json }}"
-      when:
-        - lookup('ansible.builtin.env', 'ITSM_INCIDENT') == 'none'
-        - open_incidents.json is defined
+    - name: Validate required ITSM credentials when tracked incident is set
+      ansible.builtin.assert:
+        that:
+          - itsm_host | length > 0
+          - itsm_user | length > 0
+          - itsm_pass | length > 0
+        fail_msg: >-
+          ITSM_INCIDENT is set but ITSM_HOST/ITSM_USERNAME/ITSM_PASSWORD are missing.
+      when: tracked_incident_ref != 'none'
 
-    - name: Close tracked ITSM incident
-      ansible.builtin.uri:
-        url: "{{ lookup('ansible.builtin.env', 'ITSM_HOST') }}/api/v1/incidents/{{ lookup('ansible.builtin.env', 'ITSM_INCIDENT') }}/close"
-        method: POST
-        user: "{{ lookup('ansible.builtin.env', 'ITSM_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'ITSM_PASSWORD') }}"
-        force_basic_auth: true
-        validate_certs: false
-        status_code: [200, 201]
-        body_format: json
-        body:
-          comment: "Closed by demo reset automation"
-      when: lookup('ansible.builtin.env', 'ITSM_INCIDENT') != 'none'
+    - name: Build tracked incident map for role followup
+      ansible.builtin.set_fact:
+        itsm_incident_by_key:
+          tracked: "{{ tracked_incident_ref }}"
+      when: tracked_incident_ref != 'none'
+
+    - name: Close tracked ITSM incident via role follow-up
+      ansible.builtin.include_role:
+        name: itsm_ansible_role
+        tasks_from: incident_followups.yml
+      vars:
+        itsm_api_base_url: "{{ itsm_host }}"
+        itsm_api_user: "{{ itsm_user }}"
+        itsm_api_password: "{{ itsm_pass }}"
+        itsm_validate_certs: false
+        itsm_ansible_role_followups: true
+        itsm_incident_followups:
+          - incident_key: tracked
+            comments:
+              - body: "Closed by demo reset automation"
+            close: {}
+      when: tracked_incident_ref != 'none'
 
     - name: Reset ITSM Incidents credential
       ansible.controller.credential:
         controller_host: "{{ controller_gateway }}"
-        controller_username: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(aap_user, true) }}"
-        controller_password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(aap_pass, true) }}"
+        controller_username: "{{ controller_user }}"
+        controller_password: "{{ controller_pass }}"
         validate_certs: false
         name: "ITSM Incidents Credential"
         organization: "eda_opentelemetry_workshop"
@@ -125,8 +130,8 @@
     - name: Delete project update jobs
       ansible.builtin.uri:
         url: "{{ controller_gateway.rstrip('/') }}/api/controller/v2/system_job_templates/1/launch/"
-        user: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') | default(aap_user, true) }}"
-        password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') | default(aap_pass, true) }}"
+        user: "{{ controller_user }}"
+        password: "{{ controller_pass }}"
         method: POST
         validate_certs: false
         force_basic_auth: true

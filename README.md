@@ -6,16 +6,17 @@ Demo showing how Ansible Automation Platform 2.6 and Event-Driven Ansible remedi
 
 - OpenShift cluster with admin `oc` access
 - Ansible Automation Platform **2.6** with Automation Gateway (e.g. namespace `aap`, route `https://ansible-aap.apps.ocp.zaskan.es`)
-- Cluster Alertmanager (`alertmanager-main` in `openshift-monitoring`)
+- Cluster Alertmanager (`alertmanager-main` in `openshift-monitoring`; demo stack uses in-namespace Alertmanager in `otel-demo`)
 - ITSM app deployed (e.g. `https://itsm-app-itsm-app.apps.ocp.zaskan.es/`)
 - Ansible 2.16+ and Python 3.11+ on a control node with `oc` CLI logged in
 
 ### Configuration
 
-1. Install Ansible collections:
+1. Install Ansible collections and roles:
 
    ```bash
    ansible-galaxy collection install -r casc/requirements.yaml -r collections/requirements.yaml
+   ansible-galaxy role install -r roles/requirements.yml
    ```
 
    Collections used for CasC: [`ansible.platform`](https://github.com/ansible/ansible.platform) (gateway), `ansible.controller`, `ansible.eda`, `kubernetes.core`.
@@ -76,7 +77,7 @@ Run job template **`[JT] Clean Demo Environment`** from the gateway UI (redeploy
 ### Architecture
 
 - **AAP 2.6**: Single gateway URL; CasC and runtime job modules use `aap_hostname` (see [Configuration as Code 2.6](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html-single/configuration_as_code/index))
-- **Monitoring**: Prometheus + blackbox in `otel-demo` → cluster Alertmanager → OTel Collector webhook
+- **Monitoring**: Prometheus + blackbox in `otel-demo` → Alertmanager in `otel-demo` → OTel Collector webhook
 - **Events**: Collector → Kafka `otel-events` → EDA rulebook `rulebooks/kafka.yaml`
 - **Tickets**: ITSM REST API (`/api/v1/incidents`)
 - **Remediation**: `kubernetes.core.k8s_scale` on Deployment `nginx`

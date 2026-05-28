@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - configmap-blackbox.yaml
   - configmap-prometheus.yaml
+  - configmap-alertmanager.yaml
   - configmap-otel.yaml
   - deployments.yaml
   - services.yaml

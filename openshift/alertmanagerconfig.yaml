@@ -4,7 +4,7 @@ metadata:
   name: otel-webhook
   namespace: otel-demo
   labels:
-    alertmanagerConfig: user-workload
+    alertmanagerConfig: main
 spec:
   route:
     receiver: otel

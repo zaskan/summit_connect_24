@@ -58,6 +58,11 @@
       register: kafka_topic
       changed_when: "'Created topic' in (kafka_topic.stdout | default(''))"
 
+    - name: Wait for alertmanager deployment
+      ansible.builtin.command:
+        cmd: oc rollout status deployment/alertmanager -n {{ openshift_namespace }} --timeout=300s
+      changed_when: false
+
     - name: Wait for otel-collector deployment
       ansible.builtin.command:
         cmd: oc rollout status deployment/otel-collector -n {{ openshift_namespace }} --timeout=300s
